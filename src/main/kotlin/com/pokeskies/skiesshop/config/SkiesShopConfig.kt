@@ -1,6 +1,6 @@
-package com.pokeskies.$mod_id$.config
+package com.pokeskies.skiesshop.config
 
-class $mod_name$Config(
+class SkiesShopConfig(
     var debug: Boolean = false
 ) {
     override fun toString(): String {

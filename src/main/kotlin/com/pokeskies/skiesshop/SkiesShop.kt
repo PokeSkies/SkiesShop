@@ -1,7 +1,10 @@
-package com.pokeskies.$mod_id
+package com.pokeskies.skiesshop
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.pokeskies.skiesshop.commands.BaseCommand
+import com.pokeskies.skiesshop.config.ConfigManager
+import net.fabricmc.api.ModInitializer
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
 import net.fabricmc.loader.api.FabricLoader
@@ -13,21 +16,12 @@ import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import java.io.File
 
-$
-
-import com.mojang.logging.LogUtils
-
-
-/**
- * With Kotlin, the Entrypoint can be defined in numerous ways. This is showcased on Fabrics' Github:
- * https://github.com/FabricMC/fabric-language-kotlin#entrypoint-samples
- */
-class $mod_name$ : ModInitializer {
+class SkiesShop : ModInitializer {
     companion object {
-        lateinit var INSTANCE: $mod_name$
+        lateinit var INSTANCE: SkiesShop
 
-        var MOD_ID = "$mod_id$"
-        var MOD_NAME = "$mod_name$"
+        var MOD_ID = "skiesshop"
+        var MOD_NAME = "SkiesShop"
 
         val LOGGER: Logger = LogManager.getLogger(MOD_ID)
         val MINI_MESSAGE: MiniMessage = MiniMessage.miniMessage()
@@ -56,7 +50,7 @@ class $mod_name$ : ModInitializer {
     }
 
     private fun registerEvents() {
-        ServerLifecycleEvents.SERVER_STARTING.register(ServerStarting { server: MinecraftServer? ->
+        ServerLifecycleEvents.SERVER_STARTING.register(ServerLifecycleEvents.ServerStarting { server: MinecraftServer? ->
             this.adventure = FabricServerAudiences.of(
                 server!!
             )

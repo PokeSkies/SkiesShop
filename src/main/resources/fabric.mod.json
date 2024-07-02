@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "id": "$mod_id$",
+  "id": "skiesshop",
   "version": "${version}",
-  "name": "$mod_name$",
+  "name": "SkiesShop",
   "description": "Template mod for PokeSkies",
   "authors": [
     "AmoAster",
@@ -10,7 +10,7 @@
   ],
   "entrypoints": {
     "main": [
-      "$mod_groud$.$mod_name$"
+      "com.pokeskies.skiesshop.SkiesShop"
     ]
   },
   "depends": {
@@ -19,6 +19,6 @@
     "architectury": ">=9.1.12",
     "cobblemon": "*"
   },
-  "mixins": ["$mod_id$.mixins.json"],
-  "accessWidener": "$mod_id$.accesswidener"
+  "mixins": ["skiesshop.mixins.json"],
+  "accessWidener": "skiesshop.accesswidener"
 }

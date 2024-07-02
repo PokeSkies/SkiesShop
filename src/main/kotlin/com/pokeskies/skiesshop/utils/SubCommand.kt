@@ -1,4 +1,4 @@
-package com.pokeskies.$mod_id$.utils
+package com.pokeskies.skiesshop.utils
 
 import com.mojang.brigadier.tree.LiteralCommandNode
 import net.minecraft.commands.CommandSourceStack

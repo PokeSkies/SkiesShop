@@ -1,10 +1,10 @@
-package com.pokeskies.$mod_id$.utils
+package com.pokeskies.skiesshop.utils
 
 import com.google.gson.*
 import com.mojang.serialization.Codec
 import com.mojang.serialization.JsonOps
-import com.pokeskies.$mod_id$.$mod_name$
-import com.pokeskies.$mod_id$.config.ConfigManager
+import com.pokeskies.skiesshop.SkiesShop
+import com.pokeskies.skiesshop.config.ConfigManager
 import net.minecraft.core.Holder
 import net.minecraft.core.Registry
 import net.minecraft.network.protocol.game.ClientboundSoundPacket
@@ -18,15 +18,15 @@ object Utils {
     // Useful logging functions
     fun printDebug(message: String, bypassCheck: Boolean = false) {
         if (bypassCheck || ConfigManager.CONFIG.debug)
-            $mod_name$.LOGGER.info("[${$mod_name$.MOD_NAME}] DEBUG: $message")
+            SkiesShop.LOGGER.info("[${SkiesShop.MOD_NAME}] DEBUG: $message")
     }
 
     fun printError(message: String) {
-        $mod_name$.LOGGER.error("[${$mod_name$.MOD_NAME}] ERROR: $message")
+        SkiesShop.LOGGER.error("[${SkiesShop.MOD_NAME}] ERROR: $message")
     }
 
     fun printInfo(message: String) {
-        $mod_name$.LOGGER.info("[${$mod_name$.MOD_NAME}] $message")
+        SkiesShop.LOGGER.info("[${SkiesShop.MOD_NAME}] $message")
     }
 
 

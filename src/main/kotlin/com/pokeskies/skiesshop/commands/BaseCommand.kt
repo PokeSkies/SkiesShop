@@ -1,10 +1,10 @@
-package com.pokeskies.$mod_id$.commands
+package com.pokeskies.skiesshop.commands
 
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.tree.LiteralCommandNode
-import com.pokeskies.$mod_id$.$mod_name$
-import com.pokeskies.skiestemplatemod.commands.subcommands.DebugCommand
-import com.pokeskies.skiestemplatemod.commands.subcommands.ReloadCommand
+import com.pokeskies.skiesshop.SkiesShop
+import com.pokeskies.skiesshop.commands.subcommands.DebugCommand
+import com.pokeskies.skiesshop.commands.subcommands.ReloadCommand
 import me.lucko.fabric.api.permissions.v0.Permissions
 import net.minecraft.commands.CommandSourceStack
 import net.minecraft.commands.Commands
@@ -15,7 +15,7 @@ class BaseCommand {
     fun register(dispatcher: CommandDispatcher<CommandSourceStack>) {
         val rootCommands: List<LiteralCommandNode<CommandSourceStack>> = aliases.map {
             Commands.literal(it)
-                .requires(Permissions.require("${$mod_name$.MOD_ID}.command.base", 2))
+                .requires(Permissions.require("${SkiesShop.MOD_ID}.command.base", 2))
                 .build()
         }
 
