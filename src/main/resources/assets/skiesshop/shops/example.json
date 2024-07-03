@@ -1,0 +1,28 @@
+{
+  "title": "Example Shop",
+  "size": 6,
+  "entries": {
+    "stone": {
+      "type": "ITEM",
+      "display": {
+        "id": "minecraft:stone",
+        "name": "Stone",
+        "lore": [
+          "A block of stone"
+        ]
+      },
+      "slot": 0,
+      "item": {
+        "id": "minecraft:stone"
+      },
+      "buy": {
+        "price": 1,
+        "currency": "minecraft:emerald"
+      },
+      "sell": {
+        "price": 1,
+        "currency": "minecraft:emerald"
+      }
+    }
+  }
+}

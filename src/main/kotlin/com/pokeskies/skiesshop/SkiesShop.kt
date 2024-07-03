@@ -4,6 +4,9 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.pokeskies.skiesshop.commands.BaseCommand
 import com.pokeskies.skiesshop.config.ConfigManager
+import com.pokeskies.skiesshop.config.entry.ShopEntry
+import com.pokeskies.skiesshop.config.entry.ShopEntryType
+import com.pokeskies.skiesshop.utils.Utils
 import net.fabricmc.api.ModInitializer
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
@@ -37,14 +40,22 @@ class SkiesShop : ModInitializer {
     lateinit var adventure: FabricServerAudiences
     var server: MinecraftServer? = null
 
-    var gson: Gson = GsonBuilder().disableHtmlEscaping().create()
-
+    var gson: Gson = GsonBuilder().disableHtmlEscaping()
+        .registerTypeAdapter(ShopEntry::class.java, ShopEntryType.ShopEntryTypeAdaptor())
+        .create()
     var gsonPretty: Gson = gson.newBuilder().setPrettyPrinting().create()
+
     override fun onInitialize() {
         INSTANCE = this
 
         this.configDir = File(FabricLoader.getInstance().configDirectory, MOD_ID)
         ConfigManager.load()
+
+        if (FabricLoader.getInstance().isModLoaded("impactor")) {
+            Utils.printInfo("Impactor Economy Service has been found and loaded for any Currency actions!")
+        } else {
+            Utils.printError("Impactor was not loaded, things wont work quite right...")
+        }
 
         registerEvents()
     }

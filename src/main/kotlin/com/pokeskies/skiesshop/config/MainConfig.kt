@@ -1,6 +1,6 @@
 package com.pokeskies.skiesshop.config
 
-class SkiesShopConfig(
+class MainConfig(
     var debug: Boolean = false
 ) {
     override fun toString(): String {
