@@ -35,8 +35,29 @@ class ShopGUI(
 
     // Map of Page Number to list of Shop Entries
     private var items: MutableMap<Int, List<ShopEntry>> = mutableMapOf()
+    private var page = 1
+    private var maxPage = 1
 
     init {
+        config.entries.forEach { id, entry ->
+            val pageItems = items[entry.page]?.toMutableList() ?: mutableListOf()
+            pageItems.add(entry)
+            items[entry.page] = pageItems
+        }
+
+        // Ensure all pages are present
+        maxPage = items.keys.maxOrNull() ?: 1
+        for (i in 0 until maxPage) {
+            if (!items.containsKey(i)) {
+                items[i] = listOf()
+            }
+        }
+
+        refresh()
+    }
+
+    private fun refresh() {
+        this.template.clear()
         refreshInventory()
         refreshShop()
     }
@@ -48,7 +69,7 @@ class ShopGUI(
     }
 
     private fun refreshShop() {
-        config.entries.forEach { (id, entry) ->
+        (items[page] ?: listOf()).forEach { entry ->
             val stack = entry.display.getItemStack(1)
             if (stack != null && entry.slot != null) {
                 template.set(entry.slot, GooeyButton.builder()
@@ -72,6 +93,32 @@ class ShopGUI(
                 TextUtils.toNative(" <white>- ${EconomyManager.balance(player, currency)} ${EconomyManager.getCurrencyFormatted(currency, false)}")
             })
             .build())
+
+        if (page > 1) {
+            this.template.set(5, 3, GooeyButton.builder()
+                .display(ItemStack(Items.ARROW))
+                .title(TextUtils.toNative("<red>Previous Page"))
+                .onClick { ctx ->
+                    if (page > 0) {
+                        page--
+                        refresh()
+                    }
+                }
+                .build())
+        }
+
+        if (page < maxPage) {
+            this.template.set(5, 5, GooeyButton.builder()
+                .display(ItemStack(Items.ARROW))
+                .title(TextUtils.toNative("<red>Next Page"))
+                .onClick { ctx ->
+                    if (page > 0) {
+                        page++
+                        refresh()
+                    }
+                }
+                .build())
+        }
     }
 
     private fun convertIndex(index: Int): Int {
@@ -105,7 +152,9 @@ class ShopGUI(
             ListTag()
         }
 
-        lore.add(StringTag.valueOf(""))
+        lore.add(StringTag.valueOf(Component.Serializer.toJson(
+            Component.literal(" ")
+        )))
 
         if (entry.isBuyable()) {
             lore.add(StringTag.valueOf(Component.Serializer.toJson(
