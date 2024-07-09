@@ -2,10 +2,12 @@ package com.pokeskies.skiesshop
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.pokeskies.skiesshop.addons.plan.PlanHook
 import com.pokeskies.skiesshop.commands.BaseCommand
 import com.pokeskies.skiesshop.config.ConfigManager
 import com.pokeskies.skiesshop.config.entry.ShopEntry
 import com.pokeskies.skiesshop.config.entry.ShopEntryType
+import com.pokeskies.skiesshop.data.MongoDBHandler
 import com.pokeskies.skiesshop.utils.Utils
 import net.fabricmc.api.ModInitializer
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
@@ -51,11 +53,7 @@ class SkiesShop : ModInitializer {
         this.configDir = File(FabricLoader.getInstance().configDirectory, MOD_ID)
         ConfigManager.load()
 
-        if (FabricLoader.getInstance().isModLoaded("impactor")) {
-            Utils.printInfo("Impactor Economy Service has been found and loaded for any Currency actions!")
-        } else {
-            Utils.printError("Impactor was not loaded, things wont work quite right...")
-        }
+        MongoDBHandler.initialize()
 
         registerEvents()
     }
@@ -66,6 +64,17 @@ class SkiesShop : ModInitializer {
                 server!!
             )
             this.server = server
+
+            if (FabricLoader.getInstance().isModLoaded("impactor")) {
+                Utils.printInfo("Impactor Economy Service has been found and loaded for any Currency actions!")
+            } else {
+                Utils.printError("Impactor was not loaded, things wont work quite right...")
+            }
+
+            if (FabricLoader.getInstance().isModLoaded("plan")) {
+                Utils.printInfo("Plan has been found and loaded for any Economy actions!")
+                PlanHook.initialize()
+            }
         })
         CommandRegistrationCallback.EVENT.register { dispatcher, _, _ ->
             BaseCommand().register(

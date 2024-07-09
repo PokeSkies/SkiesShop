@@ -10,12 +10,17 @@ import ca.landonjw.gooeylibs2.api.template.types.ChestTemplate
 import ca.landonjw.gooeylibs2.api.template.types.InventoryTemplate
 import com.pokeskies.skiesshop.SkiesShop
 import com.pokeskies.skiesshop.config.entry.ShopEntry
+import com.pokeskies.skiesshop.data.MongoDBHandler
+import com.pokeskies.skiesshop.data.ShopTransaction
 import com.pokeskies.skiesshop.economy.EconomyManager
 import com.pokeskies.skiesshop.utils.TextUtils
 import com.pokeskies.skiesshop.utils.Utils
 import net.minecraft.ChatFormatting
+import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.chat.Component
+import net.minecraft.network.chat.Style
 import net.minecraft.server.level.ServerPlayer
+import net.minecraft.sounds.SoundEvents
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
 import java.time.LocalDateTime
@@ -24,6 +29,7 @@ import java.util.*
 
 class TransactionGUI(
     private val player: ServerPlayer,
+    private val entryId: String,
     private val entry: ShopEntry,
     private val shopGUI: ShopGUI
 ) : UpdateEmitter<Page>(), Page {
@@ -53,7 +59,7 @@ class TransactionGUI(
 
     private fun refreshShop() {
         this.template.set(2, 4, GooeyButton.builder()
-            .display(stack)
+            .display(ShopGUI.appendPrice(entry, stack))
             .build())
 
         this.template.set(4, 4, GooeyButton.builder()
@@ -72,18 +78,35 @@ class TransactionGUI(
                 this.template.set(slot, GooeyButton.builder()
                     .display(ItemStack(Items.GREEN_STAINED_GLASS, amount))
                     .title(TextUtils.toNative("<green><b>Buy $amount"))
+                    .lore(Component::class.java, listOf(getBuyLine(entry, amount)))
                     .onClick { ctx ->
                         EconomyManager.getCurrency(entry.buy!!.currency)?.let { currency ->
                             if (EconomyManager.balance(player, currency) >= (entry.buy.price * amount)) {
                                 if (EconomyManager.withdraw(player, (entry.buy.price * amount), currency)) {
                                     if (entry.buy(player, amount)) {
-                                        player.sendSystemMessage(Component.literal("Yipee").withStyle { it.withColor(
-                                            ChatFormatting.GREEN) })
+                                        player.sendSystemMessage(Component.literal("Purchased ${amount}x ")
+                                            .append(Component.translatable(stack.descriptionId))
+                                            .append(" for ${entry.buy.price * amount}!")
+                                            .withStyle { it.withColor(ChatFormatting.GREEN) })
+                                        Utils.sendPlayerSound(player, SoundEvents.ITEM_PICKUP, 0.5f, 1.0f)
+                                        MongoDBHandler.saveUserTransaction(
+                                            ShopTransaction(
+                                                player.uuid,
+                                                shopGUI.shopID,
+                                                entryId,
+                                                entry.buy.price * amount,
+                                                currency.key().toString(),
+                                                amount,
+                                                true,
+                                                BuiltInRegistries.ITEM.getKey(stack.item).toString()
+                                            )
+                                        )
                                     } else {
                                         val timestamp = getCurrentDateTimeFormatted()
                                         Utils.printError("There was an error for player '${player.name.string}' while purchasing '${entry}' at $timestamp!")
                                         player.sendSystemMessage(Component.literal("There was an error while purchasing this item, please contact staff with the error: $timestamp").withStyle { it.withColor(
                                             ChatFormatting.RED) })
+                                        Utils.sendPlayerSound(player, SoundEvents.FIRE_EXTINGUISH, 0.3f, 1.0f)
                                     }
                                 }
                             } else {
@@ -91,9 +114,11 @@ class TransactionGUI(
                                     Component.literal("You do not have enough ")
                                         .append(SkiesShop.INSTANCE.adventure.toNative(currency.plural()))
                                         .append("!").withStyle { it.withColor(ChatFormatting.RED) })
+                                Utils.sendPlayerSound(player, SoundEvents.FIRE_EXTINGUISH, 0.3f, 1.0f)
                             }
                         } ?: run {
                             Utils.printError("Could not find currency ${entry.buy?.currency}!")
+                            Utils.sendPlayerSound(player, SoundEvents.FIRE_EXTINGUISH, 0.3f, 1.0f)
                             return@onClick
                         }
                         refreshInventory()
@@ -117,24 +142,44 @@ class TransactionGUI(
                 this.template.set(slot + 5, GooeyButton.builder()
                     .display(ItemStack(Items.RED_STAINED_GLASS, amount))
                     .title(TextUtils.toNative("<red><b>Sell $amount"))
+                    .lore(Component::class.java, listOf(getSellLine(entry, amount)))
                     .onClick { ctx ->
                         EconomyManager.getCurrency(entry.buy!!.currency)?.let { currency ->
-                            if (entry.sell(player, amount)) {
-                                if (EconomyManager.deposit(player, entry.sell!!.price * amount, currency)) {
-                                    player.sendSystemMessage(Component.literal("Yipee").withStyle { it.withColor(
-                                        ChatFormatting.GREEN) })
+                            val amountSold = entry.sell(player, amount)
+                            if (amountSold > 0) {
+                                if (EconomyManager.deposit(player, entry.sell!!.price * amountSold, currency)) {
+                                    player.sendSystemMessage(Component.literal("Sold ${amountSold}x ")
+                                        .append(Component.translatable(stack.descriptionId))
+                                        .append(" for ${entry.sell.price * amountSold}!")
+                                        .withStyle { it.withColor(ChatFormatting.GREEN) })
+                                    Utils.sendPlayerSound(player, SoundEvents.ITEM_PICKUP, 0.5f, 1.0f)
+                                    MongoDBHandler.saveUserTransaction(
+                                        ShopTransaction(
+                                            player.uuid,
+                                            shopGUI.shopID,
+                                            entryId,
+                                            entry.buy.price * amountSold,
+                                            currency.key().toString(),
+                                            amountSold,
+                                            false,
+                                            BuiltInRegistries.ITEM.getKey(stack.item).toString()
+                                        )
+                                    )
                                 } else {
                                     val timestamp = getCurrentDateTimeFormatted()
                                     Utils.printError("There was an error for player '${player.name.string}' while selling '${entry}' at $timestamp!")
                                     player.sendSystemMessage(Component.literal("There was an error while selling this item, please contact staff with the error: $timestamp").withStyle { it.withColor(
                                         ChatFormatting.RED) })
+                                    Utils.sendPlayerSound(player, SoundEvents.FIRE_EXTINGUISH, 0.3f, 1.0f)
                                 }
                             } else {
                                 player.sendSystemMessage(Component.literal("You dont have the required items!").withStyle { it.withColor(
                                     ChatFormatting.RED) })
+                                Utils.sendPlayerSound(player, SoundEvents.FIRE_EXTINGUISH, 0.3f, 1.0f)
                             }
                         } ?: run {
                             Utils.printError("Could not find currency ${entry.sell?.currency}!")
+                            Utils.sendPlayerSound(player, SoundEvents.FIRE_EXTINGUISH, 0.3f, 1.0f)
                             return@onClick
                         }
                         refreshInventory()
@@ -177,6 +222,14 @@ class TransactionGUI(
         val currentDateTime = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("yyMMdd-HHmmss")
         return currentDateTime.format(formatter)
+    }
+
+    fun getBuyLine(entry: ShopEntry, multiplier: Int = 1): Component {
+        return Component.empty().setStyle(Style.EMPTY.withItalic(false)).append(TextUtils.toNative("<green>Price: <white>${(entry.buy?.price ?: 0.0) * multiplier}"))
+    }
+
+    fun getSellLine(entry: ShopEntry, multiplier: Int = 1): Component {
+        return Component.empty().setStyle(Style.EMPTY.withItalic(false)).append(TextUtils.toNative("<red>Price: <white>${(entry.sell?.price ?: 0.0) * multiplier}"))
     }
 }
 

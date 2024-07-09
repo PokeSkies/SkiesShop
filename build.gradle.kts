@@ -94,6 +94,9 @@ dependencies {
     modImplementation("net.impactdev.impactor.api:economy:5.1.1-SNAPSHOT")
     modImplementation("net.impactdev.impactor.api:text:5.1.1-SNAPSHOT")
 
+    // Adons
+    modImplementation("com.github.plan-player-analytics:Plan:5.5.2461")
+
     modImplementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
 }
 

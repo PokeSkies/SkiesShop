@@ -26,7 +26,7 @@ class ItemShopEntry(
         return (item ?: display).getItemStack(amount)?.let { player.inventory.add(it) } ?: false
     }
 
-    override fun sell(player: ServerPlayer, amount: Int): Boolean {
+    override fun sell(player: ServerPlayer, amount: Int): Int {
         val itemConfig = item ?: display
 
         var amountFound = 0
@@ -39,8 +39,6 @@ class ItemShopEntry(
                 }
             }
         }
-
-        if (amountFound < amount) return false
 
         var removed = 0
         matchedSlots.forEach { i ->
@@ -56,7 +54,7 @@ class ItemShopEntry(
             }
         }
 
-        return removed >= amount
+        return removed
     }
 
     private fun checkItem(item: ItemConfig, checkItem: ItemStack): Boolean {

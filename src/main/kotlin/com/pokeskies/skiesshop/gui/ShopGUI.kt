@@ -11,12 +11,15 @@ import com.pokeskies.skiesshop.config.ShopConfig
 import com.pokeskies.skiesshop.config.entry.ShopEntry
 import com.pokeskies.skiesshop.economy.EconomyManager
 import com.pokeskies.skiesshop.utils.TextUtils
+import com.pokeskies.skiesshop.utils.Utils
 import net.impactdev.impactor.api.economy.EconomyService
+import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.nbt.ListTag
 import net.minecraft.nbt.StringTag
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.Style
 import net.minecraft.server.level.ServerPlayer
+import net.minecraft.sounds.SoundEvents
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
 import java.time.LocalDateTime
@@ -25,7 +28,7 @@ import java.util.*
 
 class ShopGUI(
     private val player: ServerPlayer,
-    private val shopID: String,
+    val shopID: String,
     private val config: ShopConfig
 ) : UpdateEmitter<Page?>(), Page {
     private val template: ChestTemplate =
@@ -33,15 +36,15 @@ class ShopGUI(
             .build()
     private val playerInventory: InventoryTemplate = InventoryTemplate.builder().build()
 
-    // Map of Page Number to list of Shop Entries
-    private var items: MutableMap<Int, List<ShopEntry>> = mutableMapOf()
+    // Map of Page Number to list of Pair <ID, Shop Entries>
+    private var items: MutableMap<Int, List<Pair<String, ShopEntry>>> = mutableMapOf()
     private var page = 1
     private var maxPage = 1
 
     init {
         config.entries.forEach { id, entry ->
             val pageItems = items[entry.page]?.toMutableList() ?: mutableListOf()
-            pageItems.add(entry)
+            pageItems.add(Pair(id, entry))
             items[entry.page] = pageItems
         }
 
@@ -69,13 +72,14 @@ class ShopGUI(
     }
 
     private fun refreshShop() {
-        (items[page] ?: listOf()).forEach { entry ->
+        (items[page] ?: listOf()).forEach { (id, entry) ->
             val stack = entry.display.getItemStack(1)
             if (stack != null && entry.slot != null) {
                 template.set(entry.slot, GooeyButton.builder()
-                    .display(appendLore(entry, stack))
+                    .display(appendPrice(entry, stack))
                     .onClick { ctx ->
-                        UIManager.openUIForcefully(player, TransactionGUI(player, entry, this))
+                        Utils.sendPlayerSound(player, SoundEvents.UI_BUTTON_CLICK.value(), 0.5f, 1.0f)
+                        UIManager.openUIForcefully(player, TransactionGUI(player, id, entry, this))
                     }
                     .build())
             }
@@ -143,32 +147,34 @@ class ShopGUI(
         return currentDateTime.format(formatter)
     }
 
-    fun appendLore(entry: ShopEntry, stack: ItemStack): ItemStack {
-        val display = stack.getOrCreateTagElement(ItemStack.TAG_DISPLAY)
+    companion object {
+        fun appendPrice(entry: ShopEntry, stack: ItemStack): ItemStack {
+            val display = stack.getOrCreateTagElement(ItemStack.TAG_DISPLAY)
 
-        val lore: ListTag = if (display.contains(ItemStack.TAG_LORE)) {
-            display.getList(ItemStack.TAG_LORE, 8)
-        } else {
-            ListTag()
-        }
+            val lore: ListTag = if (display.contains(ItemStack.TAG_LORE)) {
+                display.getList(ItemStack.TAG_LORE, 8)
+            } else {
+                ListTag()
+            }
 
-        lore.add(StringTag.valueOf(Component.Serializer.toJson(
-            Component.literal(" ")
-        )))
-
-        if (entry.isBuyable()) {
             lore.add(StringTag.valueOf(Component.Serializer.toJson(
-                Component.empty().setStyle(Style.EMPTY.withItalic(false)).append(TextUtils.toNative("<green>Buy Price: <white>${entry.buy?.price}"))
+                Component.literal(" ")
             )))
-        }
-        if (entry.isSellable()) {
-            lore.add(StringTag.valueOf(Component.Serializer.toJson(
-                Component.empty().setStyle(Style.EMPTY.withItalic(false)).append(TextUtils.toNative("<red>Sell Price: <white>${entry.sell?.price}"))
-            )))
-        }
 
-        display.put(ItemStack.TAG_LORE, lore)
-        stack.orCreateTag.put(ItemStack.TAG_DISPLAY, display)
-        return stack
+            if (entry.isBuyable()) {
+                lore.add(StringTag.valueOf(Component.Serializer.toJson(
+                    Component.empty().setStyle(Style.EMPTY.withItalic(false)).append(TextUtils.toNative("<green>Buy Price: <white>${entry.buy?.price ?: 0.0}"))
+                )))
+            }
+            if (entry.isSellable()) {
+                lore.add(StringTag.valueOf(Component.Serializer.toJson(
+                    Component.empty().setStyle(Style.EMPTY.withItalic(false)).append(TextUtils.toNative("<red>Sell Price: <white>${entry.sell?.price ?: 0.0}"))
+                )))
+            }
+
+            display.put(ItemStack.TAG_LORE, lore)
+            stack.orCreateTag.put(ItemStack.TAG_DISPLAY, display)
+            return stack
+        }
     }
 }

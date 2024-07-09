@@ -29,7 +29,6 @@ object Utils {
         SkiesShop.LOGGER.info("[${SkiesShop.MOD_NAME}] $message")
     }
 
-
     // Sends a player a sound packet
     fun sendPlayerSound(player: ServerPlayer, sound: SoundEvent, volume: Float, pitch: Float) {
         player.connection.send(

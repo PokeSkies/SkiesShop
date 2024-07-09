@@ -32,8 +32,8 @@ abstract class ShopEntry(
         return false
     }
 
-    open fun sell(player: ServerPlayer, amount: Int): Boolean {
-        return false
+    open fun sell(player: ServerPlayer, amount: Int): Int {
+        return 0
     }
 
     override fun toString(): String {
