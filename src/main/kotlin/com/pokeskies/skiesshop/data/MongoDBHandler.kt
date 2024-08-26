@@ -7,6 +7,7 @@ import com.mongodb.client.MongoClients
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.Filters
+import com.pokeskies.skiesshop.ShopTransaction
 import com.pokeskies.skiesshop.config.ConfigManager
 import com.pokeskies.skiesshop.utils.Utils
 import org.bson.UuidRepresentation

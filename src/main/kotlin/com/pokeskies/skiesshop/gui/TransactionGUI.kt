@@ -11,7 +11,7 @@ import ca.landonjw.gooeylibs2.api.template.types.InventoryTemplate
 import com.pokeskies.skiesshop.SkiesShop
 import com.pokeskies.skiesshop.config.entry.ShopEntry
 import com.pokeskies.skiesshop.data.MongoDBHandler
-import com.pokeskies.skiesshop.data.ShopTransaction
+import com.pokeskies.skiesshop.ShopTransaction
 import com.pokeskies.skiesshop.economy.EconomyManager
 import com.pokeskies.skiesshop.utils.TextUtils
 import com.pokeskies.skiesshop.utils.Utils
@@ -92,12 +92,13 @@ class TransactionGUI(
                                         MongoDBHandler.saveUserTransaction(
                                             ShopTransaction(
                                                 player.uuid,
+                                                System.currentTimeMillis(),
                                                 shopGUI.shopID,
                                                 entryId,
                                                 entry.buy.price * amount,
                                                 currency.key().toString(),
                                                 amount,
-                                                true,
+                                                ShopTransaction.Action.BUY,
                                                 BuiltInRegistries.ITEM.getKey(stack.item).toString()
                                             )
                                         )
@@ -156,12 +157,13 @@ class TransactionGUI(
                                     MongoDBHandler.saveUserTransaction(
                                         ShopTransaction(
                                             player.uuid,
+                                            System.currentTimeMillis(),
                                             shopGUI.shopID,
                                             entryId,
                                             entry.buy.price * amountSold,
                                             currency.key().toString(),
                                             amountSold,
-                                            false,
+                                            ShopTransaction.Action.SELL,
                                             BuiltInRegistries.ITEM.getKey(stack.item).toString()
                                         )
                                     )

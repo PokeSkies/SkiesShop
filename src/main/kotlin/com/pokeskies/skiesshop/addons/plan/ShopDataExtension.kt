@@ -38,7 +38,7 @@ class ShopDataExtension : DataExtension {
             MongoDBHandler.getAllRecords().forEach {
                 tableBuilder.addRow(
                     it.player,
-                    if (it.isPurchase) "Purchase" else "Sale",
+                    it.action.name,
                     it.shopId,
                     it.itemId + " (" + it.amount + ")",
                     it.entryPrice
@@ -66,7 +66,7 @@ class ShopDataExtension : DataExtension {
             MongoDBHandler.getUserTransactions(player).forEach {
                 tableBuilder.addRow(
                     it.player,
-                    if (it.isPurchase) "Purchase" else "Sale",
+                    it.action.name,
                     it.shopId,
                     it.itemId + " (" + it.amount + ")",
                     it.entryPrice

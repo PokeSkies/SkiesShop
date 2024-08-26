@@ -97,6 +97,11 @@ dependencies {
     // Adons
     modImplementation("com.github.plan-player-analytics:Plan:5.5.2461")
 
+    // Database
+    implementation(include("org.mongodb:mongodb-driver-sync:4.11.0")!!)
+    implementation(include("org.mongodb:mongodb-driver-core:4.11.0")!!)
+    implementation(include("org.mongodb:bson:4.11.0")!!)
+
     modImplementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
 }
 
