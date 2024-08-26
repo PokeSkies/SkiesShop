@@ -72,6 +72,11 @@ class ShopGUI(
     }
 
     private fun refreshShop() {
+        this.template.border(0, 0, 6, 9, GooeyButton.builder()
+            .display(ItemStack(Items.GRAY_STAINED_GLASS_PANE))
+            .title(TextUtils.toNative(""))
+            .build())
+
         (items[page] ?: listOf()).forEach { (id, entry) ->
             val stack = entry.display.getItemStack(1)
             if (stack != null && entry.slot != null) {
@@ -84,11 +89,6 @@ class ShopGUI(
                     .build())
             }
         }
-
-        this.template.rectangle(5, 0, 1, 9, GooeyButton.builder()
-            .display(ItemStack(Items.GRAY_STAINED_GLASS_PANE))
-            .title(TextUtils.toNative(""))
-            .build())
 
         this.template.set(5, 4, GooeyButton.builder()
             .display(ItemStack(Items.EMERALD))
