@@ -15,6 +15,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
 import net.fabricmc.loader.api.FabricLoader
 import net.kyori.adventure.platform.fabric.FabricServerAudiences
 import net.kyori.adventure.text.minimessage.MiniMessage
+import net.minecraft.nbt.CompoundTag
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.MinecraftServer
 import org.apache.logging.log4j.LogManager
@@ -44,6 +45,7 @@ class SkiesShop : ModInitializer {
 
     var gson: Gson = GsonBuilder().disableHtmlEscaping()
         .registerTypeAdapter(ShopEntry::class.java, ShopEntryType.ShopEntryTypeAdaptor())
+        .registerTypeHierarchyAdapter(CompoundTag::class.java, Utils.CodecSerializer(CompoundTag.CODEC))
         .create()
     var gsonPretty: Gson = gson.newBuilder().setPrettyPrinting().create()
 

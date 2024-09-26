@@ -31,16 +31,14 @@ class ItemConfig(
         val stack = ItemStack(item, amount)
 
         if (nbt != null) {
-            if (stack.tag != null) {
-                if (!stack.tag!!.isEmpty) {
-                    for (key in nbt.allKeys) {
-                        nbt.get(key)?.let { tag ->
-                            stack.tag?.put(key, tag)
-                        }
+            if (stack.tag != null && !stack.tag!!.isEmpty) {
+                for (key in nbt.allKeys) {
+                    nbt.get(key)?.let { tag ->
+                        stack.tag?.put(key, tag)
                     }
-                } else {
-                    stack.tag = nbt
                 }
+            } else {
+                stack.tag = nbt
             }
         }
 
@@ -59,7 +57,7 @@ class ItemConfig(
             stack.orCreateTag.put(ItemStack.TAG_DISPLAY, compoundTag)
         }
 
-        return stack
+        return stack.copy()
     }
 
     override fun toString(): String {
