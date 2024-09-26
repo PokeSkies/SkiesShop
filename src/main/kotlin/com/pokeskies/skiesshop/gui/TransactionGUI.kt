@@ -202,6 +202,7 @@ class TransactionGUI(
 
     private fun returnToShop() {
         UIManager.openUIForcefully(player, shopGUI)
+        shopGUI.refreshInventory()
     }
 
     private fun convertIndex(index: Int): Int {

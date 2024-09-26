@@ -59,19 +59,19 @@ class ShopGUI(
         refresh()
     }
 
-    private fun refresh() {
+    fun refresh() {
         this.template.clear()
         refreshInventory()
         refreshShop()
     }
 
-    private fun refreshInventory() {
+    fun refreshInventory() {
         for ((i, stack) in player.inventory.items.withIndex()) {
             playerInventory.set(convertIndex(i), GooeyButton.builder().display(stack).build())
         }
     }
 
-    private fun refreshShop() {
+    fun refreshShop() {
         this.template.border(0, 0, 6, 9, GooeyButton.builder()
             .display(ItemStack(Items.BLACK_STAINED_GLASS_PANE))
             .title(TextUtils.toNative(""))
