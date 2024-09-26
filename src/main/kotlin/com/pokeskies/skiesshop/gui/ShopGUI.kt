@@ -73,7 +73,7 @@ class ShopGUI(
 
     private fun refreshShop() {
         this.template.border(0, 0, 6, 9, GooeyButton.builder()
-            .display(ItemStack(Items.GRAY_STAINED_GLASS_PANE))
+            .display(ItemStack(Items.BLACK_STAINED_GLASS_PANE))
             .title(TextUtils.toNative(""))
             .build())
 
