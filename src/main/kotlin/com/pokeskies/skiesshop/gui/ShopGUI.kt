@@ -94,7 +94,7 @@ class ShopGUI(
             .display(ItemStack(Items.EMERALD))
             .title(TextUtils.toNative("<green>Balance:"))
             .lore(Component::class.java, EconomyService.instance().currencies().registered().map { currency ->
-                TextUtils.toNative(" <white>- ${EconomyManager.balance(player, currency)} ${EconomyManager.getCurrencyFormatted(currency, false)}")
+                TextUtils.toNative(" <white>• ${EconomyManager.balance(player, currency)} ${EconomyManager.getCurrencyFormatted(currency, false)}")
             })
             .build())
 
