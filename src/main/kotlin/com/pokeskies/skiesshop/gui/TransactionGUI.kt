@@ -13,6 +13,7 @@ import com.pokeskies.skiesshop.config.entry.ShopEntry
 import com.pokeskies.skiesshop.data.MongoDBHandler
 import com.pokeskies.skiesshop.ShopTransaction
 import com.pokeskies.skiesshop.economy.EconomyManager
+import com.pokeskies.skiesshop.utils.ShopTransactionEvent
 import com.pokeskies.skiesshop.utils.TextUtils
 import com.pokeskies.skiesshop.utils.Utils
 import net.minecraft.ChatFormatting
@@ -89,19 +90,19 @@ class TransactionGUI(
                                             .append(" for ${entry.buy.price * amount}!")
                                             .withStyle { it.withColor(ChatFormatting.GREEN) })
                                         Utils.sendPlayerSound(player, SoundEvents.ITEM_PICKUP, 0.5f, 1.0f)
-                                        MongoDBHandler.saveUserTransaction(
-                                            ShopTransaction(
-                                                player.uuid,
-                                                System.currentTimeMillis(),
-                                                shopGUI.shopID,
-                                                entryId,
-                                                entry.buy.price * amount,
-                                                currency.key().toString(),
-                                                amount,
-                                                ShopTransaction.Action.BUY,
-                                                BuiltInRegistries.ITEM.getKey(stack.item).toString()
-                                            )
+                                        val transaction = ShopTransaction(
+                                            player.uuid,
+                                            System.currentTimeMillis(),
+                                            shopGUI.shopID,
+                                            entryId,
+                                            entry.buy.price * amount,
+                                            currency.key().toString(),
+                                            amount,
+                                            ShopTransaction.Action.BUY,
+                                            BuiltInRegistries.ITEM.getKey(stack.item).toString()
                                         )
+                                        ShopTransactionEvent.EVENT.invoker().execute(player, transaction)
+                                        MongoDBHandler.saveUserTransaction(transaction)
                                     } else {
                                         val timestamp = getCurrentDateTimeFormatted()
                                         Utils.printError("There was an error for player '${player.name.string}' while purchasing '${entry}' at $timestamp!")
@@ -154,19 +155,19 @@ class TransactionGUI(
                                         .append(" for ${entry.sell.price * amountSold}!")
                                         .withStyle { it.withColor(ChatFormatting.GREEN) })
                                     Utils.sendPlayerSound(player, SoundEvents.ITEM_PICKUP, 0.5f, 1.0f)
-                                    MongoDBHandler.saveUserTransaction(
-                                        ShopTransaction(
-                                            player.uuid,
-                                            System.currentTimeMillis(),
-                                            shopGUI.shopID,
-                                            entryId,
-                                            entry.buy.price * amountSold,
-                                            currency.key().toString(),
-                                            amountSold,
-                                            ShopTransaction.Action.SELL,
-                                            BuiltInRegistries.ITEM.getKey(stack.item).toString()
-                                        )
+                                    val transaction = ShopTransaction(
+                                        player.uuid,
+                                        System.currentTimeMillis(),
+                                        shopGUI.shopID,
+                                        entryId,
+                                        entry.buy.price * amountSold,
+                                        currency.key().toString(),
+                                        amountSold,
+                                        ShopTransaction.Action.SELL,
+                                        BuiltInRegistries.ITEM.getKey(stack.item).toString()
                                     )
+                                    ShopTransactionEvent.EVENT.invoker().execute(player, transaction)
+                                    MongoDBHandler.saveUserTransaction(transaction)
                                 } else {
                                     val timestamp = getCurrentDateTimeFormatted()
                                     Utils.printError("There was an error for player '${player.name.string}' while selling '${entry}' at $timestamp!")
