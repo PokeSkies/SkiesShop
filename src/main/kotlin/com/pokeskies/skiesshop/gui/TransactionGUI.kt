@@ -17,6 +17,8 @@ import com.pokeskies.skiesshop.utils.ShopTransactionEvent
 import com.pokeskies.skiesshop.utils.TextUtils
 import com.pokeskies.skiesshop.utils.Utils
 import net.minecraft.ChatFormatting
+import net.minecraft.core.component.DataComponentPatch
+import net.minecraft.core.component.DataComponents
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.Style
@@ -24,6 +26,7 @@ import net.minecraft.server.level.ServerPlayer
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
+import net.minecraft.world.item.component.ItemLore
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -64,8 +67,9 @@ class TransactionGUI(
             .build())
 
         this.template.set(4, 4, GooeyButton.builder()
-            .display(ItemStack(Items.BARRIER))
-            .title(TextUtils.toNative("<red><b>Return to Shop"))
+            .display(ItemStack(Items.BARRIER).also {
+                it.applyComponents(DataComponentPatch.builder().set(DataComponents.ITEM_NAME, TextUtils.toNative("<red><b>Return to Shop")).build())
+            })
             .onClick { ctx ->
                 returnToShop()
             }
@@ -77,9 +81,12 @@ class TransactionGUI(
         if (entry.isBuyable()) {
             amountSlots.forEach() { amount, slot ->
                 this.template.set(slot, GooeyButton.builder()
-                    .display(ItemStack(Items.GREEN_STAINED_GLASS, amount))
-                    .title(TextUtils.toNative("<green><b>Buy $amount"))
-                    .lore(Component::class.java, listOf(getBuyLine(entry, amount)))
+                    .display(ItemStack(Items.GREEN_STAINED_GLASS, amount).also {
+                        it.applyComponents(DataComponentPatch.builder()
+                            .set(DataComponents.ITEM_NAME, TextUtils.toNative("<green><b>Buy $amount"))
+                            .set(DataComponents.LORE, ItemLore(listOf(getBuyLine(entry, amount))))
+                            .build())
+                    })
                     .onClick { ctx ->
                         EconomyManager.getCurrency(entry.buy!!.currency)?.let { currency ->
                             if (EconomyManager.balance(player, currency) >= (entry.buy.price * amount)) {
@@ -131,8 +138,11 @@ class TransactionGUI(
         } else {
             amountSlots.forEach { (amount, slot) ->
                 this.template.set(slot, GooeyButton.builder()
-                    .display(ItemStack(Items.BARRIER, 1))
-                    .title(TextUtils.toNative("<red><b>Not Purchasable"))
+                    .display(ItemStack(Items.BARRIER, 1).also {
+                        it.applyComponents(DataComponentPatch.builder()
+                            .set(DataComponents.ITEM_NAME, TextUtils.toNative("<red><b>Not Purchasable"))
+                            .build())
+                    })
                     .build()
                 )
             }
@@ -142,9 +152,12 @@ class TransactionGUI(
         if (entry.isSellable()) {
             amountSlots.forEach() { amount, slot ->
                 this.template.set(slot + 5, GooeyButton.builder()
-                    .display(ItemStack(Items.RED_STAINED_GLASS, amount))
-                    .title(TextUtils.toNative("<red><b>Sell $amount"))
-                    .lore(Component::class.java, listOf(getSellLine(entry, amount)))
+                    .display(ItemStack(Items.RED_STAINED_GLASS, amount).also {
+                        it.applyComponents(DataComponentPatch.builder()
+                            .set(DataComponents.ITEM_NAME, TextUtils.toNative("<red><b>Sell $amount"))
+                            .set(DataComponents.LORE, ItemLore(listOf(getSellLine(entry, amount))))
+                            .build())
+                    })
                     .onClick { ctx ->
                         EconomyManager.getCurrency(entry.buy!!.currency)?.let { currency ->
                             val amountSold = entry.sell(player, amount)
@@ -193,8 +206,11 @@ class TransactionGUI(
         } else {
             amountSlots.forEach { (amount, slot) ->
                 this.template.set(slot + 5, GooeyButton.builder()
-                    .display(ItemStack(Items.BARRIER, 1))
-                    .title(TextUtils.toNative("<red><b>Not Sellable"))
+                    .display(ItemStack(Items.BARRIER, 1).also {
+                        it.applyComponents(DataComponentPatch.builder()
+                            .set(DataComponents.ITEM_NAME, TextUtils.toNative("<red><b>Not Sellable"))
+                            .build())
+                    })
                     .build()
                 )
             }

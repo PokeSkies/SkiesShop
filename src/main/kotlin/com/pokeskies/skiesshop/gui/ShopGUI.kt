@@ -13,15 +13,18 @@ import com.pokeskies.skiesshop.economy.EconomyManager
 import com.pokeskies.skiesshop.utils.TextUtils
 import com.pokeskies.skiesshop.utils.Utils
 import net.impactdev.impactor.api.economy.EconomyService
-import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.core.component.DataComponentPatch
+import net.minecraft.core.component.DataComponents
 import net.minecraft.nbt.ListTag
 import net.minecraft.nbt.StringTag
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.Style
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.sounds.SoundEvents
+import net.minecraft.util.Unit
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
+import net.minecraft.world.item.component.ItemLore
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -73,8 +76,9 @@ class ShopGUI(
 
     fun refreshShop() {
         this.template.border(0, 0, 6, 9, GooeyButton.builder()
-            .display(ItemStack(Items.BLACK_STAINED_GLASS_PANE))
-            .title(TextUtils.toNative(""))
+            .display(ItemStack(Items.BLACK_STAINED_GLASS_PANE).also {
+                it.applyComponents(DataComponentPatch.builder().set(DataComponents.HIDE_TOOLTIP, Unit.INSTANCE).build())
+            })
             .build())
 
         (items[page] ?: listOf()).forEach { (id, entry) ->
@@ -91,17 +95,23 @@ class ShopGUI(
         }
 
         this.template.set(5, 4, GooeyButton.builder()
-            .display(ItemStack(Items.EMERALD))
-            .title(TextUtils.toNative("<green>Balance:"))
-            .lore(Component::class.java, EconomyService.instance().currencies().registered().map { currency ->
-                TextUtils.toNative(" <white>• ${EconomyManager.balance(player, currency)} ${EconomyManager.getCurrencyFormatted(currency, false)}")
+            .display(ItemStack(Items.EMERALD).also {
+                it.applyComponents(DataComponentPatch.builder()
+                    .set(DataComponents.ITEM_NAME, TextUtils.toNative("<green>Balance:"))
+                    .set(DataComponents.LORE, ItemLore(EconomyService.instance().currencies().registered().map { currency ->
+                        TextUtils.toNative(" <white>• ${EconomyManager.balance(player, currency)} ${EconomyManager.getCurrencyFormatted(currency, false)}")
+                    }))
+                    .build())
             })
             .build())
 
         if (page > 1) {
             this.template.set(5, 3, GooeyButton.builder()
-                .display(ItemStack(Items.ARROW))
-                .title(TextUtils.toNative("<red>Previous Page"))
+                .display(ItemStack(Items.ARROW).also {
+                    it.applyComponents(DataComponentPatch.builder()
+                        .set(DataComponents.ITEM_NAME, TextUtils.toNative("<red>Previous Page"))
+                        .build())
+                })
                 .onClick { ctx ->
                     if (page > 0) {
                         page--
@@ -113,8 +123,11 @@ class ShopGUI(
 
         if (page < maxPage) {
             this.template.set(5, 5, GooeyButton.builder()
-                .display(ItemStack(Items.ARROW))
-                .title(TextUtils.toNative("<red>Next Page"))
+                .display(ItemStack(Items.ARROW).also {
+                    it.applyComponents(DataComponentPatch.builder()
+                        .set(DataComponents.ITEM_NAME, TextUtils.toNative("<red>Next Page"))
+                        .build())
+                })
                 .onClick { ctx ->
                     if (page > 0) {
                         page++
@@ -149,31 +162,27 @@ class ShopGUI(
 
     companion object {
         fun appendPrice(entry: ShopEntry, stack: ItemStack): ItemStack {
-            val display = stack.getOrCreateTagElement(ItemStack.TAG_DISPLAY)
+            val loreComponent = stack.get(DataComponents.LORE)
 
-            val lore: ListTag = if (display.contains(ItemStack.TAG_LORE)) {
-                display.getList(ItemStack.TAG_LORE, 8)
+            val lore = if (loreComponent != null) {
+                loreComponent.lines
             } else {
-                ListTag()
+                mutableListOf()
             }
 
-            lore.add(StringTag.valueOf(Component.Serializer.toJson(
-                Component.literal(" ")
-            )))
+            lore.add(Component.literal(" "))
 
             if (entry.isBuyable()) {
-                lore.add(StringTag.valueOf(Component.Serializer.toJson(
-                    Component.empty().setStyle(Style.EMPTY.withItalic(false)).append(TextUtils.toNative("<green>Buy Price: <white>${entry.buy?.price ?: 0.0}"))
-                )))
+                lore.add(Component.empty().setStyle(Style.EMPTY.withItalic(false)).append(TextUtils.toNative("<green>Buy Price: <white>${entry.buy?.price ?: 0.0}")))
             }
             if (entry.isSellable()) {
-                lore.add(StringTag.valueOf(Component.Serializer.toJson(
-                    Component.empty().setStyle(Style.EMPTY.withItalic(false)).append(TextUtils.toNative("<red>Sell Price: <white>${entry.sell?.price ?: 0.0}"))
-                )))
+                lore.add(Component.empty().setStyle(Style.EMPTY.withItalic(false)).append(TextUtils.toNative("<red>Sell Price: <white>${entry.sell?.price ?: 0.0}")))
             }
 
-            display.put(ItemStack.TAG_LORE, lore)
-            stack.orCreateTag.put(ItemStack.TAG_DISPLAY, display)
+            stack.applyComponents(DataComponentPatch.builder()
+                .set(DataComponents.LORE, ItemLore(lore))
+                .build())
+
             return stack
         }
     }

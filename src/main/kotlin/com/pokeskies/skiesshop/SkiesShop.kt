@@ -16,6 +16,9 @@ import net.fabricmc.loader.api.FabricLoader
 import net.kyori.adventure.platform.fabric.FabricServerAudiences
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.NbtOps
+import net.minecraft.nbt.Tag
+import net.minecraft.resources.RegistryOps
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.MinecraftServer
 import org.apache.logging.log4j.LogManager
@@ -34,14 +37,15 @@ class SkiesShop : ModInitializer {
 
         @JvmStatic
         fun asResource(path: String): ResourceLocation {
-            return ResourceLocation(MOD_ID, path)
+            return ResourceLocation.fromNamespaceAndPath(MOD_ID, path)
         }
     }
 
     lateinit var configDir: File
 
     lateinit var adventure: FabricServerAudiences
-    var server: MinecraftServer? = null
+    lateinit var server: MinecraftServer
+    lateinit var nbtOpts: RegistryOps<Tag>
 
     var gson: Gson = GsonBuilder().disableHtmlEscaping()
         .registerTypeAdapter(ShopEntry::class.java, ShopEntryType.ShopEntryTypeAdaptor())
@@ -61,11 +65,12 @@ class SkiesShop : ModInitializer {
     }
 
     private fun registerEvents() {
-        ServerLifecycleEvents.SERVER_STARTING.register(ServerLifecycleEvents.ServerStarting { server: MinecraftServer? ->
+        ServerLifecycleEvents.SERVER_STARTING.register(ServerLifecycleEvents.ServerStarting { server: MinecraftServer ->
             this.adventure = FabricServerAudiences.of(
-                server!!
+                server
             )
             this.server = server
+            this.nbtOpts = server.registryAccess().createSerializationContext(NbtOps.INSTANCE)
 
             if (FabricLoader.getInstance().isModLoaded("impactor")) {
                 Utils.printInfo("Impactor Economy Service has been found and loaded for any Currency actions!")

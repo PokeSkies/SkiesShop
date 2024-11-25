@@ -1,11 +1,14 @@
 package com.pokeskies.skiesshop.config.entry.types
 
+import com.pokeskies.skiesshop.SkiesShop
 import com.pokeskies.skiesshop.config.ItemConfig
 import com.pokeskies.skiesshop.config.PriceConfig
 import com.pokeskies.skiesshop.config.entry.ShopEntry
 import com.pokeskies.skiesshop.config.entry.ShopEntryType
+import net.minecraft.core.component.DataComponentPatch
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.item.ItemStack
+import kotlin.jvm.optionals.getOrNull
 
 class ItemShopEntry(
     type: ShopEntryType = ShopEntryType.ITEM,
@@ -65,7 +68,7 @@ class ItemShopEntry(
         val nbtCopy = item.nbt?.copy()
 
         if (nbtCopy != null) {
-            val checkNBT = checkItem.tag ?: return false
+            val checkNBT = DataComponentPatch.CODEC.encodeStart(SkiesShop.INSTANCE.nbtOpts, checkItem.componentsPatch).result().getOrNull() ?: return false
 
             if (checkNBT != nbtCopy)
                 return false
