@@ -85,14 +85,19 @@ dependencies {
     modImplementation("me.lucko:fabric-permissions-api:0.3.1")
 
     // GooeyLibs (server sided GUI)
-    modImplementation("ca.landonjw.gooeylibs:fabric-api-repack:3.1.0-1.21.1-SNAPSHOT@jar")
+    modImplementation("eu.pb4:sgui:1.6.1+1.21.1")
+
+    // Placeholder Mods
+    modImplementation("io.github.miniplaceholders:miniplaceholders-api:2.2.3")
+    modImplementation("io.github.miniplaceholders:miniplaceholders-kotlin-ext:2.2.3")
+    modImplementation("eu.pb4:placeholder-api:2.4.1+1.21")
 
     // Impactor Libraries
     modImplementation("net.impactdev.impactor:common:5.3.0+1.21.1-SNAPSHOT")
     modImplementation("net.impactdev.impactor.api:economy:5.3.0-SNAPSHOT")
     modImplementation("net.impactdev.impactor.api:text:5.3.0-SNAPSHOT")
 
-    // Adons
+    // Addons
     modImplementation("com.github.plan-player-analytics:Plan:5.5.2461")
 
     // Database
@@ -100,7 +105,14 @@ dependencies {
     implementation(include("org.mongodb:mongodb-driver-core:4.11.0")!!)
     implementation(include("org.mongodb:bson:4.11.0")!!)
 
-    modImplementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
+    // SQL Storage
+    implementation(include("org.mariadb.jdbc:mariadb-java-client:3.1.0")!!)
+    implementation(include("com.zaxxer:HikariCP:5.1.0")!!)
+    implementation(include("org.xerial:sqlite-jdbc:3.43.2.2")!!)
+    implementation(include("com.h2database:h2:2.2.224")!!)
+    implementation(include("com.mysql:mysql-connector-j:8.2.0")!!)
+
+    modCompileOnly(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
 }
 
 tasks.processResources {

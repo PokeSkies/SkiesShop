@@ -8,12 +8,11 @@ import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonToken
 import com.google.gson.stream.JsonWriter
 import com.google.gson.stream.MalformedJsonException
-import kotlinx.serialization.descriptors.PrimitiveKind.*
 import java.io.IOException
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
-// Sourced from https://stackoverflow.com/questions/43412261/make-gson-accept-single-objects-where-it-expects-arrays
+// Sourced and modified from https://stackoverflow.com/questions/43412261/make-gson-accept-single-objects-where-it-expects-arrays
 internal class FlexibleListAdaptorFactory<E> private constructor() : TypeAdapterFactory {
     override fun <T> create(gson: Gson, typeToken: TypeToken<T>): TypeAdapter<T>? {
         // If it's not a List -- just delegate the job to Gson and let it pick the best type adapter itself
@@ -45,8 +44,21 @@ internal class FlexibleListAdaptorFactory<E> private constructor() : TypeAdapter
                 this.elementTypeAdapter = elementTypeAdapter
             }
 
-            override fun write(out: JsonWriter?, list: List<E>?) {
-                throw UnsupportedOperationException()
+            override fun write(out: JsonWriter, list: List<E>?) {
+                if (list == null) {
+                    out.nullValue()
+                    return
+                }
+
+                if (list.size == 1) {
+                    elementTypeAdapter.write(out, list[0])
+                } else {
+                    out.beginArray()
+                    for (element in list) {
+                        elementTypeAdapter.write(out, element)
+                    }
+                    out.endArray()
+                }
             }
 
             @Throws(IOException::class)

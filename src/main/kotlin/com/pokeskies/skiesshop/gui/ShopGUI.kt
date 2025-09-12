@@ -1,189 +1,120 @@
 package com.pokeskies.skiesshop.gui
 
-import ca.landonjw.gooeylibs2.api.UIManager
-import ca.landonjw.gooeylibs2.api.button.GooeyButton
-import ca.landonjw.gooeylibs2.api.data.UpdateEmitter
-import ca.landonjw.gooeylibs2.api.page.Page
-import ca.landonjw.gooeylibs2.api.template.Template
-import ca.landonjw.gooeylibs2.api.template.types.ChestTemplate
-import ca.landonjw.gooeylibs2.api.template.types.InventoryTemplate
-import com.pokeskies.skiesshop.config.ShopConfig
-import com.pokeskies.skiesshop.config.entry.ShopEntry
-import com.pokeskies.skiesshop.economy.EconomyManager
-import com.pokeskies.skiesshop.utils.TextUtils
-import com.pokeskies.skiesshop.utils.Utils
-import net.impactdev.impactor.api.economy.EconomyService
-import net.minecraft.core.component.DataComponentPatch
-import net.minecraft.core.component.DataComponents
-import net.minecraft.nbt.ListTag
-import net.minecraft.nbt.StringTag
+import com.pokeskies.skiesshop.config.ConfigManager
+import com.pokeskies.skiesshop.data.ShopInstance
+import com.pokeskies.skiesshop.data.entry.ShopEntry
+import com.pokeskies.skiesshop.utils.asNative
+import com.pokeskies.skiesshop.utils.clear
+import eu.pb4.sgui.api.gui.SimpleGui
 import net.minecraft.network.chat.Component
-import net.minecraft.network.chat.Style
 import net.minecraft.server.level.ServerPlayer
-import net.minecraft.sounds.SoundEvents
-import net.minecraft.util.Unit
-import net.minecraft.world.item.ItemStack
-import net.minecraft.world.item.Items
-import net.minecraft.world.item.component.ItemLore
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import java.util.*
 
 class ShopGUI(
-    private val player: ServerPlayer,
-    val shopID: String,
-    private val config: ShopConfig
-) : UpdateEmitter<Page?>(), Page {
-    private val template: ChestTemplate =
-        ChestTemplate.Builder(config.size)
-            .build()
-    private val playerInventory: InventoryTemplate = InventoryTemplate.builder().build()
-
-    // Map of Page Number to list of Pair <ID, Shop Entries>
-    private var items: MutableMap<Int, List<Pair<String, ShopEntry>>> = mutableMapOf()
-    private var page = 1
-    private var maxPage = 1
+    player: ServerPlayer,
+    val instance: ShopInstance
+) : SimpleGui(instance.type, player, false) {
+    private var page = 0
 
     init {
-        config.entries.forEach { id, entry ->
-            val pageItems = items[entry.page]?.toMutableList() ?: mutableListOf()
-            pageItems.add(Pair(id, entry))
-            items[entry.page] = pageItems
-        }
-
-        // Ensure all pages are present
-        maxPage = items.keys.maxOrNull() ?: 1
-        for (i in 0 until maxPage) {
-            if (!items.containsKey(i)) {
-                items[i] = listOf()
-            }
-        }
-
         refresh()
     }
 
     fun refresh() {
-        this.template.clear()
-        refreshInventory()
-        refreshShop()
+        this.clear()
+        renderItems()
+        renderPage()
     }
 
-    fun refreshInventory() {
-        for ((i, stack) in player.inventory.items.withIndex()) {
-            playerInventory.set(convertIndex(i), GooeyButton.builder().display(stack).build())
+    private fun renderPage() {
+        (instance.entries[page + 1] ?: mapOf()).forEach { (slot, entry) ->
+            val builder = entry.getGuiItem().createButton(player)
+            this.setSlot(slot, builder
+                .setLore(getItemLore(entry))
+                .setCallback { ctx ->
+                    val genericClicks = GenericClickType.fromClickType(ctx)
+
+                    for (click in genericClicks) {
+                        ConfigManager.CONFIG.clickOptions[click]?.execute(player, this, entry)
+                    }
+                }
+                .build())
         }
     }
 
-    fun refreshShop() {
-        this.template.border(0, 0, 6, 9, GooeyButton.builder()
-            .display(ItemStack(Items.BLACK_STAINED_GLASS_PANE).also {
-                it.applyComponents(DataComponentPatch.builder().set(DataComponents.HIDE_TOOLTIP, Unit.INSTANCE).build())
-            })
-            .build())
-
-        (items[page] ?: listOf()).forEach { (id, entry) ->
-            val stack = entry.display.getItemStack(1)
-            if (stack != null && entry.slot != null) {
-                template.set(entry.slot, GooeyButton.builder()
-                    .display(appendPrice(entry, stack))
-                    .onClick { ctx ->
-                        Utils.sendPlayerSound(player, SoundEvents.UI_BUTTON_CLICK.value(), 0.5f, 1.0f)
-                        UIManager.openUIForcefully(player, TransactionGUI(player, id, entry, this))
-                    }
-                    .build())
+    private fun renderItems() {
+        (instance.items[page + 1] ?: listOf()).forEach { item ->
+            val button = item.asGuiItem().createButton(player)
+                .setCallback { ctx ->
+                    item.actions.forEach { (id, action) -> action.executeAction(player, this) }
+                }.build()
+            for (slot in item.slots) {
+                this.setSlot(slot, button)
             }
         }
+    }
 
-        this.template.set(5, 4, GooeyButton.builder()
-            .display(ItemStack(Items.EMERALD).also {
-                it.applyComponents(DataComponentPatch.builder()
-                    .set(DataComponents.ITEM_NAME, TextUtils.toNative("<green>Balance:"))
-                    .set(DataComponents.LORE, ItemLore(EconomyService.instance().currencies().registered().map { currency ->
-                        TextUtils.toNative(" <white>• ${EconomyManager.balance(player, currency)} ${EconomyManager.getCurrencyFormatted(currency, false)}")
-                    }))
-                    .build())
-            })
-            .build())
-
-        if (page > 1) {
-            this.template.set(5, 3, GooeyButton.builder()
-                .display(ItemStack(Items.ARROW).also {
-                    it.applyComponents(DataComponentPatch.builder()
-                        .set(DataComponents.ITEM_NAME, TextUtils.toNative("<red>Previous Page"))
-                        .build())
-                })
-                .onClick { ctx ->
-                    if (page > 0) {
-                        page--
-                        refresh()
-                    }
-                }
-                .build())
-        }
-
-        if (page < maxPage) {
-            this.template.set(5, 5, GooeyButton.builder()
-                .display(ItemStack(Items.ARROW).also {
-                    it.applyComponents(DataComponentPatch.builder()
-                        .set(DataComponents.ITEM_NAME, TextUtils.toNative("<red>Next Page"))
-                        .build())
-                })
-                .onClick { ctx ->
-                    if (page > 0) {
-                        page++
-                        refresh()
-                    }
-                }
-                .build())
+    fun nextPage() {
+        if (page < instance.pages - 1) {
+            page++
+            refresh()
         }
     }
 
-    private fun convertIndex(index: Int): Int {
-        return if (index < 9) 27 + index else index - 9
+    fun previousPage() {
+        if (page > 0) {
+            page--
+            refresh()
+        }
     }
 
-    override fun getTemplate(): Template {
-        return template
+    fun lastPage() {
+        page = instance.pages - 1
+        refresh()
     }
 
-    override fun getInventoryTemplate(): Optional<InventoryTemplate> {
-        return Optional.of(playerInventory)
+    fun firstPage() {
+        page = 0
+        refresh()
     }
 
     override fun getTitle(): Component {
-        return TextUtils.toNative(config.title)
-    }
-
-    fun getCurrentDateTimeFormatted(): String {
-        val currentDateTime = LocalDateTime.now()
-        val formatter = DateTimeFormatter.ofPattern("yyMMdd-HHmmss")
-        return currentDateTime.format(formatter)
+        return instance.title
     }
 
     companion object {
-        fun appendPrice(entry: ShopEntry, stack: ItemStack): ItemStack {
-            val loreComponent = stack.get(DataComponents.LORE)
+        fun getItemLore(entry: ShopEntry): List<Component> {
+            val description = entry.display.lore.map { line ->
+                Component.empty().withStyle { it.withItalic(false) }.append(line.asNative())
+            }
 
-            val lore = if (loreComponent != null) {
-                loreComponent.lines
+            val lines = if (entry.isBuyable() && entry.isSellable()) {
+                ConfigManager.CONFIG.entryLore.buySell
+            } else if (entry.isBuyable()) {
+                ConfigManager.CONFIG.entryLore.buy
+            } else if (entry.isSellable()) {
+                ConfigManager.CONFIG.entryLore.sell
             } else {
-                mutableListOf()
+                listOf()
             }
 
-            lore.add(Component.literal(" "))
-
-            if (entry.isBuyable()) {
-                lore.add(Component.empty().setStyle(Style.EMPTY.withItalic(false)).append(TextUtils.toNative("<green>Buy Price: <white>${entry.buy?.price ?: 0.0}")))
+            val lore = mutableListOf<Component>()
+            lines.forEach { line ->
+                if (line.contains("%display_item_lore%")) {
+                    lore.addAll(description)
+                } else {
+                    lore.add(
+                        Component.empty().withStyle { it.withItalic(false) }.append(
+                            line.replace("%buy_price%", (entry.buy?.price ?: 0.0).toString())
+                                .replace("%sell_price%", (entry.sell?.price ?: 0.0).toString())
+                                .replace("%buy_price_currency%", entry.buy?.getCurrencyName() ?: "")
+                                .replace("%sell_price_currency%", entry.sell?.getCurrencyName() ?: "")
+                                .asNative()
+                        )
+                    )
+                }
             }
-            if (entry.isSellable()) {
-                lore.add(Component.empty().setStyle(Style.EMPTY.withItalic(false)).append(TextUtils.toNative("<red>Sell Price: <white>${entry.sell?.price ?: 0.0}")))
-            }
 
-            stack.applyComponents(DataComponentPatch.builder()
-                .set(DataComponents.LORE, ItemLore(lore))
-                .build())
-
-            return stack
+            return lore
         }
     }
 }

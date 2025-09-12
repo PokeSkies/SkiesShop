@@ -1,27 +1,78 @@
 {
   "title": "Example Shop",
-  "size": 6,
+  "type": "GENERIC_9x6",
   "entries": {
+    "dirt": {
+      "type": "ITEM",
+      "slot": 0,
+      "page": [
+        1
+      ],
+      "item": "minecraft:dirt",
+      "buy": {
+        "price": 1,
+        "economy": "IMPACTOR",
+        "currency": "impactor:dollars"
+      },
+      "sell": {
+        "price": 1,
+        "economy": "IMPACTOR",
+        "currency": "impactor:dollars"
+      }
+    },
     "stone": {
       "type": "ITEM",
       "display": {
-        "id": "minecraft:stone",
+        "item": "minecraft:stone",
         "name": "Stone",
         "lore": [
           "A block of stone"
         ]
       },
-      "slot": 0,
-      "item": {
-        "id": "minecraft:stone"
-      },
+      "slot": 1,
+      "page": [
+        1,
+        2
+      ],
+      "item": "minecraft:stone",
       "buy": {
         "price": 1,
-        "currency": "minecraft:emerald"
-      },
-      "sell": {
-        "price": 1,
-        "currency": "minecraft:emerald"
+        "economy": "IMPACTOR",
+        "currency": "impactor:dollars"
+      }
+    }
+  },
+  "items": {
+    "background": {
+      "item": "minecraft:black_stained_glass_pane",
+      "slots": [
+        45, 46, 47, 48, 49, 50, 51, 52, 53
+      ]
+    },
+    "next_page": {
+      "item": "minecraft:arrow",
+      "slots": [50],
+      "name": "<green>Next Page",
+      "lore": [
+        "<gray>Go to the next page"
+      ],
+      "actions": {
+        "next_page": {
+          "type": "NEXT_PAGE"
+        }
+      }
+    },
+    "previous_page": {
+      "item": "minecraft:arrow",
+      "slots": [48],
+      "name": "<green>Previous Page",
+      "lore": [
+        "<gray>Go to the previous page"
+      ],
+      "actions": {
+        "previous_page": {
+          "type": "PREVIOUS_PAGE"
+        }
       }
     }
   }

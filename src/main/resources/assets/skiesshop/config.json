@@ -1,3 +1,90 @@
 {
-  "debug": false
+  "debug": false,
+  "base_shop": "example",
+  "entry_lore": {
+    "buy": [
+      "%display_item_lore%",
+      "",
+      "<green><b>Buy Price:</b> <white>%buy_price% %buy_price_currency%",
+      "",
+      "<gray>Left-Click to buy this item"
+    ],
+    "sell": [
+      "%display_item_lore%",
+      "",
+      "<red><b>Sell Price:</b> <white>%sell_price% %sell_price_currency%",
+      "",
+      "<gray>Right-Click to sell this item"
+    ],
+    "buy_sell": [
+      "%display_item_lore%",
+      "",
+      "<green><b>Buy Price:</b> <white>%buy_price% %buy_price_currency%",
+      "<red><b>Sell Price:</b> <white>%sell_price% %sell_price_currency%",
+      "",
+      "<gray>Left-Click to buy this item",
+      "<gray>Right-Click to sell this item"
+    ]
+  },
+  "click_options": {
+    "ANY_LEFT_CLICK": {
+      "type": "OPEN_CONFIRM_MENU",
+      "transactions": [
+        "buy"
+      ],
+      "menu": "example_buy"
+    },
+    "ANY_RIGHT_CLICK": {
+      "type": "OPEN_CONFIRM_MENU",
+      "transactions": [
+        "sell"
+      ],
+      "menu": "example_sell"
+    }
+  },
+  "storage": {
+    "type": "SQLITE",
+    "host": "localhost",
+    "port": 27017,
+    "database": "skiesshop",
+    "username": "root",
+    "password": "",
+    "table_prefix": "skiesshop_",
+    "properties": {
+      "useUnicode": "true",
+      "characterEncoding": "utf8"
+    },
+    "pool_settings": {
+      "maximum_pool_size": 10,
+      "minimum_idle": 10,
+      "keepalive_time": 0,
+      "connection_timeout": 30000,
+      "idle_timeout": 600000,
+      "max_lifetime": 1800000
+    },
+    "url_override": ""
+  },
+  "logging": {
+    "enabled": true,
+    "type": "SQLITE",
+    "host": "localhost",
+    "port": 27017,
+    "database": "skiesshop",
+    "username": "root",
+    "password": "",
+    "table_prefix": "skiesshop_",
+    "properties": {
+      "useUnicode": "true",
+      "characterEncoding": "utf8"
+    },
+    "pool_settings": {
+      "maximum_pool_size": 10,
+      "minimum_idle": 10,
+      "keepalive_time": 0,
+      "connection_timeout": 30000,
+      "idle_timeout": 600000,
+      "max_lifetime": 1800000
+    },
+    "url_override": ""
+  }
 }

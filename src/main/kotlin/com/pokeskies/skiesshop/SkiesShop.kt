@@ -1,13 +1,22 @@
 package com.pokeskies.skiesshop
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.pokeskies.skiesshop.addons.plan.PlanHook
 import com.pokeskies.skiesshop.commands.BaseCommand
 import com.pokeskies.skiesshop.config.ConfigManager
-import com.pokeskies.skiesshop.config.entry.ShopEntry
-import com.pokeskies.skiesshop.config.entry.ShopEntryType
-import com.pokeskies.skiesshop.data.MongoDBHandler
+import com.pokeskies.skiesshop.config.ShopConfig
+import com.pokeskies.skiesshop.data.TransactionType
+import com.pokeskies.skiesshop.data.click.EntryClickOption
+import com.pokeskies.skiesshop.data.entry.ShopEntry
+import com.pokeskies.skiesshop.data.items.actions.Action
+import com.pokeskies.skiesshop.economy.EconomyType
+import com.pokeskies.skiesshop.economy.IEconomyService
+import com.pokeskies.skiesshop.gui.GenericClickType
+import com.pokeskies.skiesshop.logging.LoggerManager
+import com.pokeskies.skiesshop.logging.LoggerType
+import com.pokeskies.skiesshop.placeholders.PlaceholderManager
+import com.pokeskies.skiesshop.storage.StorageType
 import com.pokeskies.skiesshop.utils.Utils
 import net.fabricmc.api.ModInitializer
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
@@ -24,6 +33,8 @@ import net.minecraft.server.MinecraftServer
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import java.io.File
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
 class SkiesShop : ModInitializer {
     companion object {
@@ -32,7 +43,7 @@ class SkiesShop : ModInitializer {
         var MOD_ID = "skiesshop"
         var MOD_NAME = "SkiesShop"
 
-        val LOGGER: Logger = LogManager.getLogger(MOD_ID)
+        val LOGGER: Logger = LogManager.getLogger(MOD_NAME)
         val MINI_MESSAGE: MiniMessage = MiniMessage.miniMessage()
 
         @JvmStatic
@@ -47,8 +58,22 @@ class SkiesShop : ModInitializer {
     lateinit var server: MinecraftServer
     lateinit var nbtOpts: RegistryOps<Tag>
 
+    private var economyServices: Map<EconomyType, IEconomyService> = emptyMap()
+
+    val asyncExecutor: ExecutorService = Executors.newFixedThreadPool(8, ThreadFactoryBuilder()
+        .setNameFormat("SkiesShops-Async-%d")
+        .setDaemon(true)
+        .build())
+
     var gson: Gson = GsonBuilder().disableHtmlEscaping()
-        .registerTypeAdapter(ShopEntry::class.java, ShopEntryType.ShopEntryTypeAdaptor())
+        .registerTypeAdapter(ShopEntry::class.java, ShopEntry.Adaptor())
+        .registerTypeAdapter(ShopConfig::class.java, ShopConfig.Deserializer())
+        .registerTypeAdapter(Action::class.java, Action.Adaptor())
+        .registerTypeAdapter(GenericClickType::class.java, GenericClickType.Adaptor())
+        .registerTypeAdapter(EntryClickOption::class.java, EntryClickOption.Adaptor())
+        .registerTypeAdapter(LoggerType::class.java, LoggerType.Adaptor())
+        .registerTypeAdapter(TransactionType::class.java, TransactionType.Adaptor())
+        .registerTypeAdapter(StorageType::class.java, StorageType.Adaptor())
         .registerTypeHierarchyAdapter(CompoundTag::class.java, Utils.CodecSerializer(CompoundTag.CODEC))
         .create()
     var gsonPretty: Gson = gson.newBuilder().setPrettyPrinting().create()
@@ -59,7 +84,9 @@ class SkiesShop : ModInitializer {
         this.configDir = File(FabricLoader.getInstance().configDirectory, MOD_ID)
         ConfigManager.load()
 
-        MongoDBHandler.initialize()
+        this.economyServices = IEconomyService.getLoadedEconomyServices()
+
+        LoggerManager.load()
 
         registerEvents()
     }
@@ -72,16 +99,21 @@ class SkiesShop : ModInitializer {
             this.server = server
             this.nbtOpts = server.registryAccess().createSerializationContext(NbtOps.INSTANCE)
 
+            PlaceholderManager.init()
+
             if (FabricLoader.getInstance().isModLoaded("impactor")) {
                 Utils.printInfo("Impactor Economy Service has been found and loaded for any Currency actions!")
             } else {
                 Utils.printError("Impactor was not loaded, things wont work quite right...")
             }
 
-            if (FabricLoader.getInstance().isModLoaded("plan")) {
-                Utils.printInfo("Plan has been found and loaded for any Economy actions!")
-                PlanHook.initialize()
-            }
+            // Disabled for now
+//            if (FabricLoader.getInstance().isModLoaded("plan")) {
+//                Utils.printInfo("Plan has been found and loaded for any Economy actions!")
+//                PlanHook.initialize()
+//            }
+
+            SkiesShopManager.load()
         })
         CommandRegistrationCallback.EVENT.register { dispatcher, _, _ ->
             BaseCommand().register(
@@ -92,5 +124,22 @@ class SkiesShop : ModInitializer {
 
     fun reload() {
         ConfigManager.load()
+
+        this.economyServices = IEconomyService.getLoadedEconomyServices()
+
+        LoggerManager.load()
+        SkiesShopManager.load()
+    }
+
+    fun getLoadedEconomyServices(): Map<EconomyType, IEconomyService> {
+        return this.economyServices
+    }
+
+    fun getEconomyService(economyType: EconomyType?): IEconomyService? {
+        return economyType?.let { this.economyServices[it] }
+    }
+
+    fun getEconomyServiceOrDefault(economyType: EconomyType?): IEconomyService? {
+        return economyType?.let { this.economyServices[it] } ?: this.economyServices.values.firstOrNull()
     }
 }

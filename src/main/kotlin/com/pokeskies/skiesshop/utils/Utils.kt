@@ -13,8 +13,12 @@ import net.minecraft.server.level.ServerPlayer
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.sounds.SoundSource
 import java.lang.reflect.Type
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 object Utils {
+    val formatter = DateTimeFormatter.ofPattern("yyMMdd-HHmmss")
+
     // Useful logging functions
     fun printDebug(message: String, bypassCheck: Boolean = false) {
         if (bypassCheck || ConfigManager.CONFIG.debug)
@@ -45,7 +49,6 @@ object Utils {
         )
     }
 
-
     // Formats a time in seconds to the format "xd yh zm zs", but truncates unncessary parts
     fun getFormattedTime(time: Long): String {
         if (time <= 0) return "0s"
@@ -69,6 +72,10 @@ object Utils {
         return java.lang.String.join(" ", timeFormatted)
     }
 
+    fun getCurrentDateTimeFormatted(): String {
+        val currentDateTime = LocalDateTime.now()
+        return currentDateTime.format(formatter)
+    }
 
     // Useful GSON seralizers for Minecraft Codecs. Thank you to Patbox for these
     data class RegistrySerializer<T>(val registry: Registry<T>) : JsonSerializer<T>, JsonDeserializer<T> {

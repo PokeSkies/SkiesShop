@@ -1,6 +1,6 @@
 package com.pokeskies.skiesshop.utils
 
-import com.pokeskies.skiesshop.ShopTransaction
+import com.pokeskies.skiesshop.data.ShopTransaction
 import net.fabricmc.fabric.api.event.Event
 import net.fabricmc.fabric.api.event.EventFactory
 import net.minecraft.server.level.ServerPlayer
