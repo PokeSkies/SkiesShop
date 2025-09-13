@@ -3,7 +3,7 @@ package com.pokeskies.skiesshop.data.items.actions
 import com.google.gson.*
 import com.google.gson.annotations.JsonAdapter
 import com.pokeskies.skiesshop.gui.GenericClickType
-import com.pokeskies.skiesshop.gui.ShopGUI
+import com.pokeskies.skiesshop.gui.IRefreshableGui
 import com.pokeskies.skiesshop.utils.FlexibleListAdaptorFactory
 import eu.pb4.sgui.api.ClickType
 import net.minecraft.server.level.ServerPlayer
@@ -14,7 +14,7 @@ abstract class Action(
     @JsonAdapter(FlexibleListAdaptorFactory::class)
     val click: List<GenericClickType> = listOf(GenericClickType.ANY)
 ) {
-    abstract fun executeAction(player: ServerPlayer, gui: ShopGUI)
+    abstract fun executeAction(player: ServerPlayer, gui: IRefreshableGui)
 
     fun matchesClick(buttonClick: ClickType): Boolean {
         return click.any { it.buttonClicks.contains(buttonClick) }

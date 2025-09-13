@@ -5,21 +5,21 @@ import com.pokeskies.skiesshop.data.ShopInstance
 import com.pokeskies.skiesshop.data.entry.ShopEntry
 import com.pokeskies.skiesshop.utils.asNative
 import com.pokeskies.skiesshop.utils.clear
-import eu.pb4.sgui.api.gui.SimpleGui
 import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ServerPlayer
 
 class ShopGUI(
     player: ServerPlayer,
-    val instance: ShopInstance
-) : SimpleGui(instance.type, player, false) {
+    val instance: ShopInstance,
+    previous: IRefreshableGui? = null
+) : IRefreshableGui(instance.type, player, false, previous) {
     private var page = 0
 
     init {
         refresh()
     }
 
-    fun refresh() {
+    override fun refresh() {
         this.clear()
         renderItems()
         renderPage()

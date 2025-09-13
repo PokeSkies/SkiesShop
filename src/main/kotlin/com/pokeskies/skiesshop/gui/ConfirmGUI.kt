@@ -6,17 +6,16 @@ import com.pokeskies.skiesshop.data.confirm.ConfirmAmountItem
 import com.pokeskies.skiesshop.data.entry.ShopEntry
 import com.pokeskies.skiesshop.utils.asNative
 import eu.pb4.sgui.api.elements.GuiElementBuilder
-import eu.pb4.sgui.api.gui.SimpleGui
 import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.item.ItemStack
 
 class ConfirmGUI(
-    private val player: ServerPlayer,
-    private  val confirmMenu: ConfirmMenuConfig,
+    player: ServerPlayer,
+    private val confirmMenu: ConfirmMenuConfig,
     private val shopGUI: ShopGUI,
     private val entry: ShopEntry,
-) : SimpleGui(confirmMenu.type.type, player, false) {
+) : IRefreshableGui(confirmMenu.type.type, player, false, shopGUI) {
     private var stack: ItemStack
 
     init {
@@ -24,6 +23,10 @@ class ConfirmGUI(
             stack = it
         }
 
+        refresh()
+    }
+
+    override fun refresh() {
         renderItems()
         refreshShop()
     }
@@ -50,7 +53,7 @@ class ConfirmGUI(
         confirmMenu.items.forEach { (id, item) ->
             val button = item.asGuiItem().createButton(player)
                 .setCallback { ctx ->
-                    item.actions.forEach { (id, action) -> action.executeAction(player, shopGUI) }
+                    item.actions.forEach { (id, action) -> action.executeAction(player, this) }
                 }.build()
             for (slot in item.slots) {
                 this.setSlot(slot, button)

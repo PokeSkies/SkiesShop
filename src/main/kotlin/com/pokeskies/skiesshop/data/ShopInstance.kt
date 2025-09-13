@@ -3,6 +3,7 @@ package com.pokeskies.skiesshop.data
 import com.pokeskies.skiesshop.config.ShopConfig
 import com.pokeskies.skiesshop.data.entry.ShopEntry
 import com.pokeskies.skiesshop.data.items.GenericItem
+import com.pokeskies.skiesshop.gui.IRefreshableGui
 import com.pokeskies.skiesshop.gui.ShopGUI
 import com.pokeskies.skiesshop.utils.asNative
 import net.minecraft.network.chat.Component
@@ -32,7 +33,7 @@ class ShopInstance(
                 }
             }
 
-            val maxPages = entriesMap.keys.max()
+            val maxPages = if (entriesMap.isEmpty()) 1 else entriesMap.keys.max()
 
             val itemsMap: MutableMap<Int, MutableList<GenericItem>> = mutableMapOf()
             config.items.forEach { (_, item) ->
@@ -54,8 +55,8 @@ class ShopInstance(
         }
     }
 
-    fun open(player: ServerPlayer) {
-        ShopGUI(player, this).open()
+    fun open(player: ServerPlayer, previous: IRefreshableGui? = null) {
+        ShopGUI(player, this, previous).open()
     }
 
     override fun toString(): String {

@@ -6,7 +6,7 @@ import com.pokeskies.skiesshop.SkiesShop
 import com.pokeskies.skiesshop.data.items.actions.Action
 import com.pokeskies.skiesshop.data.items.actions.ActionType
 import com.pokeskies.skiesshop.gui.GenericClickType
-import com.pokeskies.skiesshop.gui.ShopGUI
+import com.pokeskies.skiesshop.gui.IRefreshableGui
 import com.pokeskies.skiesshop.placeholders.PlaceholderManager
 import com.pokeskies.skiesshop.utils.FlexibleListAdaptorFactory
 import com.pokeskies.skiesshop.utils.Utils
@@ -18,7 +18,7 @@ class CommandConsole(
     @JsonAdapter(FlexibleListAdaptorFactory::class) @SerializedName("commands",  alternate = ["command"])
     private val commands: List<String> = emptyList()
 ) : Action(type, click) {
-    override fun executeAction(player: ServerPlayer, gui: ShopGUI) {
+    override fun executeAction(player: ServerPlayer, gui: IRefreshableGui) {
         val parsedCommands = commands.map { PlaceholderManager.parse(player, it) }
 
         Utils.printDebug("[ACTION - ${type.name}] Player(${player.gameProfile.name}), Parsed Commands($parsedCommands): $this")

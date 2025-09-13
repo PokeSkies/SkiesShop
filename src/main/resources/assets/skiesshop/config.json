@@ -1,6 +1,6 @@
 {
   "debug": false,
-  "base_shop": "example",
+  "base_shop": "example_categories",
   "entry_lore": {
     "buy": [
       "%display_item_lore%",

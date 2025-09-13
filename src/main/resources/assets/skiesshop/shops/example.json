@@ -49,6 +49,19 @@
         45, 46, 47, 48, 49, 50, 51, 52, 53
       ]
     },
+    "back": {
+      "item": "minecraft:barrier",
+      "slot": 45,
+      "name": "<red>Back to Categories",
+      "lore": [
+        "<gray>Click to go back to the categories"
+      ],
+      "actions": {
+        "back": {
+          "type": "BACK"
+        }
+      }
+    },
     "next_page": {
       "item": "minecraft:arrow",
       "slots": [50],
