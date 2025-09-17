@@ -2,6 +2,7 @@
   "title": "Select Amount to Sell",
   "type": "GENERIC_9x3",
   "entry_slot": 13,
+  "back_on_purchase": true,
   "amounts": {
     "1": {
       "item": "minecraft:red_stained_glass",

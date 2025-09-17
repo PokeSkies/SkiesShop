@@ -8,12 +8,14 @@ import com.pokeskies.skiesshop.config.GuiItem
 import com.pokeskies.skiesshop.config.PriceOption
 import com.pokeskies.skiesshop.data.ShopInstance
 import com.pokeskies.skiesshop.data.ShopTransaction
+import com.pokeskies.skiesshop.data.TransactionResult
 import com.pokeskies.skiesshop.data.TransactionType
 import com.pokeskies.skiesshop.data.entry.ShopEntryType.Companion.valueOfAnyCase
 import com.pokeskies.skiesshop.logging.LoggerManager
 import com.pokeskies.skiesshop.utils.FlexibleListAdaptorFactory
 import com.pokeskies.skiesshop.utils.ShopTransactionEvent
 import com.pokeskies.skiesshop.utils.Utils
+import com.pokeskies.skiesshop.utils.asNative
 import net.minecraft.ChatFormatting
 import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ServerPlayer
@@ -51,51 +53,49 @@ abstract class ShopEntry(
         return sell != null
     }
 
-    open fun buy(player: ServerPlayer, amount: Int): Boolean {
-        return false
+    open fun buy(player: ServerPlayer, amount: Int): TransactionResult {
+        return TransactionResult(false, "", 0)
     }
 
-    open fun sell(player: ServerPlayer, amount: Int): Int {
-        return 0
+    open fun sell(player: ServerPlayer, amount: Int): TransactionResult {
+        return TransactionResult(false, "", 0)
     }
 
     fun tryBuy(player: ServerPlayer, shop: ShopInstance, amount: Int): Boolean {
         if (buy == null) return false
+
+        val maxAmount = getMaxAmount(TransactionType.BUY)
+        if (maxAmount != null && maxAmount < amount) return false
+
         SkiesShop.INSTANCE.getEconomyService(buy.economy)?.let { economy ->
             if (economy.balance(player, buy.currency) >= (buy.price * amount)) {
                 if (economy.withdraw(player, (buy.price * amount), buy.currency)) {
-                    if (buy(player, amount)) {
-                        player.sendSystemMessage(
-                            Component.literal("Purchased ${amount}x ")
-                                .append(Component.translatable(display.getItemStack(player).descriptionId))
-                                .append(" for ${buy.price * amount}!")
-                                .withStyle { it.withColor(ChatFormatting.GREEN) })
-                        Utils.sendPlayerSound(player, SoundEvents.ITEM_PICKUP, 0.5f, 1.0f)
-                        val transaction = ShopTransaction(
-                            player.uuid,
-                            System.currentTimeMillis(),
-                            shop.id,
-                            id,
-                            TransactionType.BUY,
-                            buy.price * amount,
-                            amount,
-                            toJson()
-                        )
-                        ShopTransactionEvent.EVENT.invoker().execute(player, transaction)
-                        LoggerManager.logTransaction(transaction)
-                        return true
-                    } else {
-                        val timestamp = Utils.getCurrentDateTimeFormatted()
-                        Utils.printError("There was an error for player '${player.name.string}' while processing a purchase action for '${this}' at $timestamp!")
-                        player.sendSystemMessage(
-                            Component.literal("There was an error while processing a purchase action, please contact staff with the error: $timestamp")
-                                .withStyle {
-                                    it.withColor(
-                                        ChatFormatting.RED
-                                    )
-                                })
+                    val transaction = buy(player, amount)
+                    if (!transaction.success) {
+                        player.sendSystemMessage(transaction.response.asNative())
                         Utils.sendPlayerSound(player, SoundEvents.FIRE_EXTINGUISH, 0.3f, 1.0f)
+                        return false
                     }
+
+                    player.sendSystemMessage(
+                        Component.literal("Purchased ${amount}x ")
+                            .append(Component.translatable(display.getItemStack(player).descriptionId))
+                            .append(" for ${buy.price * amount}!")
+                            .withStyle { it.withColor(ChatFormatting.GREEN) })
+                    Utils.sendPlayerSound(player, SoundEvents.ITEM_PICKUP, 0.5f, 1.0f)
+                    val shopTransaction = ShopTransaction(
+                        player.uuid,
+                        System.currentTimeMillis(),
+                        shop.id,
+                        id,
+                        TransactionType.BUY,
+                        buy.price * amount,
+                        amount,
+                        toJson()
+                    )
+                    ShopTransactionEvent.EVENT.invoker().execute(player, shopTransaction)
+                    LoggerManager.logTransaction(shopTransaction)
+                    return true
                 }
             } else {
                 player.sendSystemMessage(
@@ -112,8 +112,19 @@ abstract class ShopEntry(
 
     fun trySell(player: ServerPlayer, shop: ShopInstance, amount: Int): Boolean {
         if (sell == null) return false
+
+        val maxAmount = getMaxAmount(TransactionType.SELL)
+        if (maxAmount != null && maxAmount < amount) return false
+
         SkiesShop.INSTANCE.getEconomyService(sell.economy)?.let { economy ->
-            val amountSold = sell(player, amount)
+            val transaction = sell(player, amount)
+            if (!transaction.success) {
+                player.sendSystemMessage(transaction.response.asNative())
+                Utils.sendPlayerSound(player, SoundEvents.FIRE_EXTINGUISH, 0.3f, 1.0f)
+                return false
+            }
+
+            val amountSold = transaction.amount
             if (amountSold > 0) {
                 if (economy.deposit(player, sell.price * amountSold, sell.currency)) {
                     player.sendSystemMessage(
@@ -122,7 +133,7 @@ abstract class ShopEntry(
                             .append(" for ${sell.price * amountSold}!")
                             .withStyle { it.withColor(ChatFormatting.GREEN) })
                     Utils.sendPlayerSound(player, SoundEvents.ITEM_PICKUP, 0.5f, 1.0f)
-                    val transaction = ShopTransaction(
+                    val shopTransaction = ShopTransaction(
                         player.uuid,
                         System.currentTimeMillis(),
                         shop.id,
@@ -132,8 +143,8 @@ abstract class ShopEntry(
                         amountSold,
                         toJson()
                     )
-                    ShopTransactionEvent.EVENT.invoker().execute(player, transaction)
-                    LoggerManager.logTransaction(transaction)
+                    ShopTransactionEvent.EVENT.invoker().execute(player, shopTransaction)
+                    LoggerManager.logTransaction(shopTransaction)
                     return true
                 } else {
                     val timestamp = Utils.getCurrentDateTimeFormatted()
@@ -157,6 +168,13 @@ abstract class ShopEntry(
         }
 
         return false
+    }
+
+    open fun getMaxAmount(transactionType: TransactionType): Int? {
+        return when (transactionType) {
+            TransactionType.BUY -> buy?.maxAmount
+            TransactionType.SELL -> sell?.maxAmount
+        }
     }
 
     fun toJson(): String {

@@ -10,6 +10,8 @@ class ConfirmMenuConfig(
     val type: InventoryType,
     @SerializedName("entry_slot")
     val entrySlot: Int,
+    @SerializedName("back_on_purchase")
+    val backOnPurchase: Boolean = true,
     val amounts: Map<String, ConfirmAmountItem> = emptyMap(),
     val items: Map<String, GenericItem> = emptyMap()
 ) {

@@ -12,6 +12,8 @@ import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.sounds.SoundSource
+import net.minecraft.world.entity.player.Inventory
+import net.minecraft.world.item.ItemStack
 import java.lang.reflect.Type
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -114,4 +116,22 @@ object Utils {
             }
         }
     }
+}
+
+fun Inventory.canFit(stack: ItemStack): Boolean {
+    var count = 0
+    for (item in this.items) {
+        if (item.isEmpty) {
+            count += stack.maxStackSize
+            if (count >= stack.count) return true
+            continue
+        }
+
+        if (ItemStack.isSameItemSameComponents(item, stack) && item.count < item.maxStackSize) {
+            count += item.maxStackSize - item.count
+            if (count >= stack.count) return true
+        }
+    }
+
+    return false
 }

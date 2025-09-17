@@ -18,6 +18,8 @@ class ConfirmGUI(
 ) : IRefreshableGui(confirmMenu.type.type, player, false, shopGUI) {
     private var stack: ItemStack
 
+    private var lastClick: Long = 0
+
     init {
         entry.getGuiItem().getItemStack(player).let {
             stack = it
@@ -37,6 +39,9 @@ class ConfirmGUI(
         for ((id, amountItem) in confirmMenu.amounts) {
             if (amountItem.type == TransactionType.BUY && !entry.isBuyable()) continue
             if (amountItem.type == TransactionType.SELL && !entry.isSellable()) continue
+
+            val maxAmount = entry.getMaxAmount(amountItem.type)
+            if (maxAmount != null && maxAmount < amountItem.amount) continue
 
             val button = amountItem.asGuiItem().createButton(player)
                 .setCallback { ctx ->
@@ -62,15 +67,21 @@ class ConfirmGUI(
     }
 
     private fun processClick(amountItem: ConfirmAmountItem) {
+        if (System.currentTimeMillis() - lastClick < 200) return
+        lastClick = System.currentTimeMillis()
+
+        val maxAmount = entry.getMaxAmount(amountItem.type)
+        if (maxAmount != null && maxAmount < amountItem.amount) return
+
         when (amountItem.type) {
             TransactionType.BUY -> {
                 if (entry.isBuyable() && entry.tryBuy(player, shopGUI.instance, amountItem.amount)) {
-                    close()
+                    if (confirmMenu.backOnPurchase) close()
                 }
             }
             TransactionType.SELL -> {
                 if (entry.isSellable() && entry.trySell(player, shopGUI.instance, amountItem.amount)) {
-                    close()
+                    if (confirmMenu.backOnPurchase) close()
                 }
             }
         }
