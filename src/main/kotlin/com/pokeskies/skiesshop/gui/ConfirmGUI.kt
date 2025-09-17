@@ -76,12 +76,12 @@ class ConfirmGUI(
         when (amountItem.type) {
             TransactionType.BUY -> {
                 if (entry.isBuyable() && entry.tryBuy(player, shopGUI.instance, amountItem.amount)) {
-                    if (confirmMenu.backOnPurchase) close()
+                    if (confirmMenu.backOnTransaction) close()
                 }
             }
             TransactionType.SELL -> {
                 if (entry.isSellable() && entry.trySell(player, shopGUI.instance, amountItem.amount)) {
-                    if (confirmMenu.backOnPurchase) close()
+                    if (confirmMenu.backOnTransaction) close()
                 }
             }
         }

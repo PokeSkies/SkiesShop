@@ -2,7 +2,7 @@
   "title": "Select Amount to Buy",
   "type": "GENERIC_9x3",
   "entry_slot": 13,
-  "back_on_purchase": true,
+  "back_on_transaction": true,
   "amounts": {
     "1": {
       "item": "minecraft:lime_stained_glass",
