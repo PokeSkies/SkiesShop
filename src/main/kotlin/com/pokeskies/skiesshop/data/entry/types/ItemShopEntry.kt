@@ -1,5 +1,6 @@
 package com.pokeskies.skiesshop.data.entry.types
 
+import com.google.gson.annotations.SerializedName
 import com.mojang.authlib.properties.Property
 import com.mojang.authlib.properties.PropertyMap
 import com.pokeskies.skiesshop.SkiesShop
@@ -40,6 +41,7 @@ class ItemShopEntry(
     val amount: Int = 1,
     val name: String? = null,
     val lore: List<String> = emptyList(),
+    @SerializedName("components", alternate = ["nbt"])
     val components: CompoundTag? = null,
     val customModelData: Int? = null
 ) : ShopEntry(type, display, slot, page, buy, sell) {
