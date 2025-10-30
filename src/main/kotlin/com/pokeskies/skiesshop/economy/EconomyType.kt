@@ -32,7 +32,7 @@ enum class EconomyType(
         }
     }
 
-    internal class EconomyTypeAdaptor: JsonSerializer<EconomyType>, JsonDeserializer<EconomyType> {
+    internal class Adapter: JsonSerializer<EconomyType>, JsonDeserializer<EconomyType> {
         override fun serialize(src: EconomyType, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
             return JsonPrimitive(src.identifier)
         }

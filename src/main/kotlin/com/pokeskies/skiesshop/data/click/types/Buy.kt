@@ -16,7 +16,7 @@ class Buy(
         Utils.printDebug("[Entry Click Option - ${type.name}] Player(${player.gameProfile.name}) Amount($amount): $this")
         if (entry.isBuyable()) {
             Utils.sendPlayerSound(player, SoundEvents.UI_BUTTON_CLICK.value(), 0.5f, 1.0f)
-            entry.tryBuy(player, gui.instance, amount)
+            entry.tryBuy(player, gui.instance, amount, gui)
         }
     }
 

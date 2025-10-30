@@ -36,7 +36,7 @@ class ConfirmGUI(
     private fun refreshShop() {
         setSlot(confirmMenu.entrySlot, GuiElementBuilder(stack).setLore(ShopGUI.getItemLore(entry)))
 
-        for ((id, amountItem) in confirmMenu.amounts) {
+        for ((_, amountItem) in confirmMenu.amounts) {
             if (amountItem.type == TransactionType.BUY && !entry.isBuyable()) continue
             if (amountItem.type == TransactionType.SELL && !entry.isSellable()) continue
 
@@ -55,10 +55,10 @@ class ConfirmGUI(
     }
 
     private fun renderItems() {
-        confirmMenu.items.forEach { (id, item) ->
+        confirmMenu.items.forEach { (_, item) ->
             val button = item.asGuiItem().createButton(player)
                 .setCallback { ctx ->
-                    item.actions.forEach { (id, action) -> action.executeAction(player, this) }
+                    item.actions.forEach { (_, action) -> action.executeAction(player, this) }
                 }.build()
             for (slot in item.slots) {
                 this.setSlot(slot, button)
@@ -75,12 +75,12 @@ class ConfirmGUI(
 
         when (amountItem.type) {
             TransactionType.BUY -> {
-                if (entry.isBuyable() && entry.tryBuy(player, shopGUI.instance, amountItem.amount)) {
+                if (entry.isBuyable() && entry.tryBuy(player, shopGUI.instance, amountItem.amount, this)) {
                     if (confirmMenu.backOnTransaction) close()
                 }
             }
             TransactionType.SELL -> {
-                if (entry.isSellable() && entry.trySell(player, shopGUI.instance, amountItem.amount)) {
+                if (entry.isSellable() && entry.trySell(player, shopGUI.instance, amountItem.amount, this)) {
                     if (confirmMenu.backOnTransaction) close()
                 }
             }

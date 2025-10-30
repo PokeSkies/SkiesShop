@@ -11,10 +11,10 @@ import com.pokeskies.skiesshop.data.ShopTransaction
 import com.pokeskies.skiesshop.data.TransactionResult
 import com.pokeskies.skiesshop.data.TransactionType
 import com.pokeskies.skiesshop.data.entry.ShopEntryType.Companion.valueOfAnyCase
+import com.pokeskies.skiesshop.gui.IRefreshableGui
 import com.pokeskies.skiesshop.logging.LoggerManager
 import com.pokeskies.skiesshop.utils.FlexibleListAdaptorFactory
 import com.pokeskies.skiesshop.utils.ShopTransactionEvent
-import com.pokeskies.skiesshop.utils.TextUtils
 import com.pokeskies.skiesshop.utils.Utils
 import com.pokeskies.skiesshop.utils.asNative
 import net.minecraft.ChatFormatting
@@ -62,12 +62,31 @@ abstract class ShopEntry(
         return TransactionResult(false, "", 0)
     }
 
-    fun tryBuy(player: ServerPlayer, shop: ShopInstance, amount: Int): Boolean {
+    fun tryBuy(player: ServerPlayer, shop: ShopInstance, amount: Int, gui: IRefreshableGui): Boolean {
         if (buy == null) return false
 
+        // Amount Validity Check
         val maxAmount = getMaxAmount(TransactionType.BUY)
         if (maxAmount != null && maxAmount < amount) return false
 
+        // Requirements Check
+        buy.requirements?.let { requirements ->
+            if (requirements.checkRequirements(player, gui)) {
+                requirements.executeSuccessActions(player, gui)
+            } else {
+                if (requirements.sendDenialMessage) {
+                    player.sendSystemMessage(
+                        Component.literal("You do not meet the requirements to purchase this!")
+                            .withStyle { it.withColor(ChatFormatting.RED)}
+                    )
+                    Utils.sendPlayerSound(player, SoundEvents.FIRE_EXTINGUISH, 0.3f, 1.0f)
+                }
+                requirements.executeDenyActions(player, gui)
+                return false
+            }
+        }
+
+        // Economy Check and Transaction
         SkiesShop.INSTANCE.getEconomyService(buy.economy)?.let { economy ->
             if (economy.balance(player, buy.currency) >= (buy.price * amount)) {
                 if (economy.withdraw(player, (buy.price * amount), buy.currency)) {
@@ -111,12 +130,31 @@ abstract class ShopEntry(
         return false
     }
 
-    fun trySell(player: ServerPlayer, shop: ShopInstance, amount: Int): Boolean {
+    fun trySell(player: ServerPlayer, shop: ShopInstance, amount: Int, gui: IRefreshableGui): Boolean {
         if (sell == null) return false
 
+        // Amount Validity Check
         val maxAmount = getMaxAmount(TransactionType.SELL)
         if (maxAmount != null && maxAmount < amount) return false
 
+        // Requirements Check
+        sell.requirements?.let { requirements ->
+            if (requirements.checkRequirements(player, gui)) {
+                requirements.executeSuccessActions(player, gui)
+            } else {
+                if (requirements.sendDenialMessage) {
+                    player.sendSystemMessage(
+                        Component.literal("You do not meet the requirements to sell this!")
+                            .withStyle { it.withColor(ChatFormatting.RED)}
+                    )
+                    Utils.sendPlayerSound(player, SoundEvents.FIRE_EXTINGUISH, 0.3f, 1.0f)
+                }
+                requirements.executeDenyActions(player, gui)
+                return false
+            }
+        }
+
+        // Economy Transaction
         SkiesShop.INSTANCE.getEconomyService(sell.economy)?.let { economy ->
             val transaction = sell(player, amount)
             if (!transaction.success) {
