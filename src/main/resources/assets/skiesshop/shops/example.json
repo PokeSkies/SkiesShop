@@ -57,8 +57,9 @@
         "<gray>Click to go back to the categories"
       ],
       "actions": {
-        "back": {
-          "type": "BACK"
+        "open_shop": {
+          "type": "OPEN_SHOP",
+          "id": "example_categories"
         }
       }
     },
