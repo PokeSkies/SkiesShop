@@ -103,6 +103,10 @@ class ItemShopEntry(
         return TransactionResult(true, amount = removed)
     }
 
+    override fun getDisplayName(player: ServerPlayer): Component? {
+        return if (name != null) return PlaceholderManager.parse(player, name).asNative() else null
+    }
+
     private fun isItem(checkItem: ItemStack): Boolean {
         val newItem = BuiltInRegistries.ITEM.getOptional(ResourceLocation.parse(item))
         if (newItem.isEmpty) {

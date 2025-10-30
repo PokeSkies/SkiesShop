@@ -14,6 +14,7 @@ import com.pokeskies.skiesshop.data.entry.ShopEntryType.Companion.valueOfAnyCase
 import com.pokeskies.skiesshop.logging.LoggerManager
 import com.pokeskies.skiesshop.utils.FlexibleListAdaptorFactory
 import com.pokeskies.skiesshop.utils.ShopTransactionEvent
+import com.pokeskies.skiesshop.utils.TextUtils
 import com.pokeskies.skiesshop.utils.Utils
 import com.pokeskies.skiesshop.utils.asNative
 import net.minecraft.ChatFormatting
@@ -79,7 +80,7 @@ abstract class ShopEntry(
 
                     player.sendSystemMessage(
                         Component.literal("Purchased ${amount}x ")
-                            .append(Component.translatable(display.getItemStack(player).descriptionId))
+                            .append(getSafeDisplayName(player))
                             .append(" for ${buy.price * amount}!")
                             .withStyle { it.withColor(ChatFormatting.GREEN) })
                     Utils.sendPlayerSound(player, SoundEvents.ITEM_PICKUP, 0.5f, 1.0f)
@@ -129,7 +130,7 @@ abstract class ShopEntry(
                 if (economy.deposit(player, sell.price * amountSold, sell.currency)) {
                     player.sendSystemMessage(
                         Component.literal("Sold ${amountSold}x ")
-                            .append(Component.translatable(display.getItemStack(player).descriptionId))
+                            .append(getSafeDisplayName(player))
                             .append(" for ${sell.price * amountSold}!")
                             .withStyle { it.withColor(ChatFormatting.GREEN) })
                     Utils.sendPlayerSound(player, SoundEvents.ITEM_PICKUP, 0.5f, 1.0f)
@@ -179,6 +180,15 @@ abstract class ShopEntry(
 
     fun toJson(): String {
         return SkiesShop.INSTANCE.gson.toJson(this)
+    }
+
+    open fun getDisplayName(player: ServerPlayer): Component? {
+        return null
+    }
+
+    private fun getSafeDisplayName(player: ServerPlayer): Component {
+        if (display.name != null) return display.name.asNative()
+        return getDisplayName(player) ?: Component.translatable(getGuiItem().getItemStack(player).descriptionId)
     }
 
     internal class Adapter: JsonSerializer<ShopEntry>, JsonDeserializer<ShopEntry> {
