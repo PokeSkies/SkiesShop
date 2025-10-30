@@ -22,7 +22,7 @@ enum class TransactionType(val identifier: String): StringRepresentable {
         }
     }
 
-    internal class Adaptor(): JsonSerializer<TransactionType>, JsonDeserializer<TransactionType> {
+    internal class Adapter: JsonSerializer<TransactionType>, JsonDeserializer<TransactionType> {
         override fun serialize(src: TransactionType, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
             return JsonPrimitive(src.identifier)
         }

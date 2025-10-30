@@ -13,6 +13,7 @@ import com.pokeskies.skiesshop.data.items.actions.Action
 import com.pokeskies.skiesshop.economy.EconomyType
 import com.pokeskies.skiesshop.economy.IEconomyService
 import com.pokeskies.skiesshop.gui.GenericClickType
+import com.pokeskies.skiesshop.gui.InventoryType
 import com.pokeskies.skiesshop.logging.LoggerManager
 import com.pokeskies.skiesshop.logging.LoggerType
 import com.pokeskies.skiesshop.placeholders.PlaceholderManager
@@ -66,14 +67,15 @@ class SkiesShop : ModInitializer {
         .build())
 
     var gson: Gson = GsonBuilder().disableHtmlEscaping()
-        .registerTypeAdapter(ShopEntry::class.java, ShopEntry.Adaptor())
+        .registerTypeAdapter(ShopEntry::class.java, ShopEntry.Adapter())
         .registerTypeAdapter(ShopConfig::class.java, ShopConfig.Deserializer())
-        .registerTypeAdapter(Action::class.java, Action.Adaptor())
-        .registerTypeAdapter(GenericClickType::class.java, GenericClickType.Adaptor())
-        .registerTypeAdapter(EntryClickOption::class.java, EntryClickOption.Adaptor())
-        .registerTypeAdapter(LoggerType::class.java, LoggerType.Adaptor())
-        .registerTypeAdapter(TransactionType::class.java, TransactionType.Adaptor())
-        .registerTypeAdapter(StorageType::class.java, StorageType.Adaptor())
+        .registerTypeAdapter(Action::class.java, Action.Adapter())
+        .registerTypeAdapter(GenericClickType::class.java, GenericClickType.Adapter())
+        .registerTypeAdapter(EntryClickOption::class.java, EntryClickOption.Adapter())
+        .registerTypeAdapter(LoggerType::class.java, LoggerType.Adapter())
+        .registerTypeAdapter(TransactionType::class.java, TransactionType.Adapter())
+        .registerTypeAdapter(StorageType::class.java, StorageType.Adapter())
+        .registerTypeAdapter(InventoryType::class.java, InventoryType.Adapter())
         .registerTypeHierarchyAdapter(CompoundTag::class.java, Utils.CodecSerializer(CompoundTag.CODEC))
         .create()
     var gsonPretty: Gson = gson.newBuilder().setPrettyPrinting().create()
@@ -114,6 +116,13 @@ class SkiesShop : ModInitializer {
 //            }
 
             SkiesShopManager.load()
+        })
+        ServerLifecycleEvents.SERVER_STOPPING.register(ServerLifecycleEvents.ServerStopping {
+            try {
+
+            } finally {
+                asyncExecutor.shutdownNow()
+            }
         })
         CommandRegistrationCallback.EVENT.register { dispatcher, _, _ ->
             BaseCommand().register(

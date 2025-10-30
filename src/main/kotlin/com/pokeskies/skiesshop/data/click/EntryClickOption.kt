@@ -15,7 +15,7 @@ abstract class EntryClickOption(
         return "EntryClickOption(type=$type)"
     }
 
-    internal class Adaptor: JsonSerializer<EntryClickOption>, JsonDeserializer<EntryClickOption> {
+    internal class Adapter: JsonSerializer<EntryClickOption>, JsonDeserializer<EntryClickOption> {
         override fun serialize(src: EntryClickOption, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
             return context.serialize(src, src::class.java)
         }

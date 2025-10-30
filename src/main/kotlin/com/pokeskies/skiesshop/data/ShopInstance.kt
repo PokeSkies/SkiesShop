@@ -23,12 +23,36 @@ class ShopInstance(
 ) {
     companion object {
         fun create(config: ShopConfig): ShopInstance {
+            // Fill with shop entries that have slots assigned
             val entriesMap: MutableMap<Int, MutableMap<Int, ShopEntry>> = mutableMapOf()
-            config.entries.forEach { (_, entry) ->
+            config.entries.filter { it.value.slots.isNotEmpty() }.forEach { (_, entry) ->
                 entry.pages.ifEmpty { listOf(1) }.forEach { page ->
                     val pageEntries = entriesMap.getOrPut(page) { mutableMapOf() }
                     entry.slots.forEach { slot ->
                         pageEntries[slot] = entry
+                    }
+                }
+            }
+
+            // Collect the valid slots for any given page based on the background items
+            val validSlots = MutableList(config.type.slots) { it }
+            config.items.forEach { (_, item) ->
+                validSlots.removeAll(item.slots)
+            }
+
+            config.entries.filter { it.value.slots.isEmpty() }.forEach { (_, entry) ->
+                // For each entry we need to fill, find the first page with an empty slot
+                var page = 1
+                var placed = false // will flip true when successfully placed
+                while (!placed) {
+                    val pageEntries = entriesMap.getOrPut(page) { mutableMapOf() }
+                    val emptySlotsOnPage = validSlots.filter { it !in pageEntries.keys }
+                    val slot = emptySlotsOnPage.firstOrNull()
+                    if (slot != null) {
+                        pageEntries[slot] = entry
+                        placed = true
+                    } else {
+                        page++
                     }
                 }
             }

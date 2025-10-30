@@ -181,7 +181,7 @@ abstract class ShopEntry(
         return SkiesShop.INSTANCE.gson.toJson(this)
     }
 
-    internal class Adaptor : JsonSerializer<ShopEntry>, JsonDeserializer<ShopEntry> {
+    internal class Adapter: JsonSerializer<ShopEntry>, JsonDeserializer<ShopEntry> {
         override fun serialize(src: ShopEntry, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
             return context.serialize(src, src::class.java)
         }

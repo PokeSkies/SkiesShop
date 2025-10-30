@@ -41,7 +41,7 @@ enum class GenericClickType(val identifier: String, val buttonClicks: List<Click
         }
     }
 
-    internal class Adaptor : JsonSerializer<GenericClickType>, JsonDeserializer<GenericClickType> {
+    internal class Adapter : JsonSerializer<GenericClickType>, JsonDeserializer<GenericClickType> {
         override fun serialize(src: GenericClickType, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
             return JsonPrimitive(src.identifier)
         }

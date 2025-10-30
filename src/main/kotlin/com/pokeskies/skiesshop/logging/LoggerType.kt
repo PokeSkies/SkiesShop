@@ -19,7 +19,7 @@ enum class LoggerType(val identifier: String) {
         }
     }
 
-    internal class Adaptor : JsonSerializer<LoggerType>, JsonDeserializer<LoggerType> {
+    internal class Adapter: JsonSerializer<LoggerType>, JsonDeserializer<LoggerType> {
         override fun serialize(src: LoggerType, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
             return JsonPrimitive(src.identifier)
         }

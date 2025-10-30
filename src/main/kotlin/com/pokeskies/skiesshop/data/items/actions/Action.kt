@@ -24,7 +24,7 @@ abstract class Action(
         return "Action(type=$type, click=$click)"
     }
 
-    internal class Adaptor : JsonSerializer<Action>, JsonDeserializer<Action> {
+    internal class Adapter : JsonSerializer<Action>, JsonDeserializer<Action> {
         override fun serialize(src: Action, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
             return context.serialize(src, src::class.java)
         }
