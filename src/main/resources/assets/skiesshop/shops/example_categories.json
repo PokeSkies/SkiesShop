@@ -1,0 +1,49 @@
+{
+  "title": "Shop Categories",
+  "type": "GENERIC_9x3",
+  "entries": {},
+  "items": {
+    "category_1": {
+      "item": "minecraft:stone",
+      "slots": [12],
+      "name": "<green>Blocks",
+      "lore": [
+        "<gray>Click to go to the Blocks category"
+      ],
+      "actions": {
+        "open_blocks": {
+          "type": "OPEN_SHOP",
+          "id": "example"
+        }
+      }
+    },
+    "category_2": {
+      "item": "minecraft:wheat",
+      "slots": [13],
+      "name": "<green>Food",
+      "lore": [
+        "<gray>Click to go to the Food category"
+      ],
+      "actions": {
+        "open_blocks": {
+          "type": "OPEN_SHOP",
+          "id": "example"
+        }
+      }
+    },
+    "category_3": {
+      "item": "cobblemon:poke_ball",
+      "slots": [14],
+      "name": "<green>PokeBall",
+      "lore": [
+        "<gray>Click to go to the PokeBall category"
+      ],
+      "actions": {
+        "open_blocks": {
+          "type": "OPEN_SHOP",
+          "id": "example"
+        }
+      }
+    }
+  }
+}

@@ -12,9 +12,15 @@ import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.sounds.SoundSource
+import net.minecraft.world.entity.player.Inventory
+import net.minecraft.world.item.ItemStack
 import java.lang.reflect.Type
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 object Utils {
+    val formatter = DateTimeFormatter.ofPattern("yyMMdd-HHmmss")
+
     // Useful logging functions
     fun printDebug(message: String, bypassCheck: Boolean = false) {
         if (bypassCheck || ConfigManager.CONFIG.debug)
@@ -45,7 +51,6 @@ object Utils {
         )
     }
 
-
     // Formats a time in seconds to the format "xd yh zm zs", but truncates unncessary parts
     fun getFormattedTime(time: Long): String {
         if (time <= 0) return "0s"
@@ -69,6 +74,10 @@ object Utils {
         return java.lang.String.join(" ", timeFormatted)
     }
 
+    fun getCurrentDateTimeFormatted(): String {
+        val currentDateTime = LocalDateTime.now()
+        return currentDateTime.format(formatter)
+    }
 
     // Useful GSON seralizers for Minecraft Codecs. Thank you to Patbox for these
     data class RegistrySerializer<T>(val registry: Registry<T>) : JsonSerializer<T>, JsonDeserializer<T> {
@@ -88,7 +97,7 @@ object Utils {
         @Throws(JsonParseException::class)
         override fun deserialize(json: JsonElement?, typeOfT: Type?, context: JsonDeserializationContext?): T? {
             return try {
-                codec.decode(JsonOps.INSTANCE, json).getOrThrow(false) { }.first
+                codec.decode(JsonOps.INSTANCE, json).orThrow.first
             } catch (e: Throwable) {
                 printError("There was an error while deserializing a Codec: $codec")
                 null
@@ -98,7 +107,7 @@ object Utils {
         override fun serialize(src: T?, typeOfSrc: Type?, context: JsonSerializationContext?): JsonElement {
             return try {
                 if (src != null)
-                    codec.encodeStart(JsonOps.INSTANCE, src).getOrThrow(false) { }
+                    codec.encodeStart(JsonOps.INSTANCE, src).orThrow
                 else
                     JsonNull.INSTANCE
             } catch (e: Throwable) {
@@ -107,4 +116,22 @@ object Utils {
             }
         }
     }
+}
+
+fun Inventory.canFit(stack: ItemStack): Boolean {
+    var count = 0
+    for (item in this.items) {
+        if (item.isEmpty) {
+            count += stack.maxStackSize
+            if (count >= stack.count) return true
+            continue
+        }
+
+        if (ItemStack.isSameItemSameComponents(item, stack) && item.count < item.maxStackSize) {
+            count += item.maxStackSize - item.count
+            if (count >= stack.count) return true
+        }
+    }
+
+    return false
 }

@@ -3,15 +3,13 @@
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Paths
-import java.util.*
 import java.util.function.Function
-
 
 plugins {
     java
     idea
-    id("quiet-fabric-loom") version ("1.5-SNAPSHOT")
-    kotlin("jvm") version ("1.9.22")
+    id("quiet-fabric-loom") version "1.7-SNAPSHOT"
+    id("org.jetbrains.kotlin.jvm").version("2.0.0")
     `maven-publish`
 }
 val modId = project.properties["mod_id"].toString()
@@ -61,40 +59,45 @@ repositories {
     }
     maven("https://oss.sonatype.org/content/repositories/snapshots")
     maven("https://maven.impactdev.net/repository/development/")
+    maven("https://repo.lucko.me")
 }
 
 dependencies {
     minecraft("com.mojang:minecraft:$minecraftVersion")
-    modImplementation("net.fabricmc:fabric-loader:0.14.25")
-    modApi("net.fabricmc.fabric-api:fabric-api:0.91.0+$minecraftVersion")
-
     mappings(loom.layered {
         officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-$minecraftVersion:${project.properties["parchment_version"]}")
+        // TODO: Fix hardcoded minecraft version once Parchment updates
+        parchment("org.parchmentmc.data:parchment-1.21:${project.properties["parchment_version"]}")
     })
+
     modImplementation("net.fabricmc:fabric-loader:${project.properties["loader_version"].toString()}")
     modImplementation("net.fabricmc.fabric-api:fabric-api:${project.properties["fabric_version"].toString()}")
     modImplementation("net.fabricmc:fabric-language-kotlin:${project.properties["fabric_kotlin_version"].toString()}")
 
     // Adventure Text!
-    modImplementation(include("net.kyori:adventure-platform-fabric:5.9.0") {
+    modImplementation(include("net.kyori:adventure-platform-fabric:5.14.2") {
         exclude("com.google.code.gson")
         exclude("ca.stellardrift", "colonel")
         exclude("net.fabricmc")
     })
 
     // PermissionsAPI
-    modImplementation("me.lucko:fabric-permissions-api:0.2-SNAPSHOT")
+    modImplementation("me.lucko:fabric-permissions-api:0.3.1")
 
     // GooeyLibs (server sided GUI)
-    modImplementation("ca.landonjw.gooeylibs:fabric:3.0.0-1.20.1-SNAPSHOT@jar")
+    modImplementation("eu.pb4:sgui:1.6.1+1.21.1")
+
+    // Placeholder Mods
+    modImplementation("io.github.miniplaceholders:miniplaceholders-api:2.2.3")
+    modImplementation("io.github.miniplaceholders:miniplaceholders-kotlin-ext:2.2.3")
+    modImplementation("eu.pb4:placeholder-api:2.4.1+1.21")
 
     // Impactor Libraries
-    modImplementation("net.impactdev.impactor:common:5.1.1-SNAPSHOT")
-    modImplementation("net.impactdev.impactor.api:economy:5.1.1-SNAPSHOT")
-    modImplementation("net.impactdev.impactor.api:text:5.1.1-SNAPSHOT")
+    modImplementation("net.impactdev.impactor:common:5.3.0+1.21.1-SNAPSHOT")
+    modImplementation("net.impactdev.impactor.api:economy:5.3.0-SNAPSHOT")
+    modImplementation("net.impactdev.impactor.api:text:5.3.0-SNAPSHOT")
 
-    // Adons
+    // Addons
     modImplementation("com.github.plan-player-analytics:Plan:5.5.2461")
 
     // Database
@@ -102,7 +105,14 @@ dependencies {
     implementation(include("org.mongodb:mongodb-driver-core:4.11.0")!!)
     implementation(include("org.mongodb:bson:4.11.0")!!)
 
-    modImplementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
+    // SQL Storage
+    implementation(include("org.mariadb.jdbc:mariadb-java-client:3.1.0")!!)
+    implementation(include("com.zaxxer:HikariCP:5.1.0")!!)
+    implementation(include("org.xerial:sqlite-jdbc:3.43.2.2")!!)
+    implementation(include("com.h2database:h2:2.2.224")!!)
+    implementation(include("com.mysql:mysql-connector-j:8.2.0")!!)
+
+    modCompileOnly(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
 }
 
 tasks.processResources {
@@ -142,12 +152,12 @@ tasks.remapJar {
 
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
-    options.release.set(17)
+    options.release.set(21)
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
     withSourcesJar()
 }
 

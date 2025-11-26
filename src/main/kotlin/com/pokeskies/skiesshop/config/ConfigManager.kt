@@ -16,6 +16,7 @@ object ConfigManager {
 
     lateinit var CONFIG: MainConfig
     var SHOPS: MutableMap<String, ShopConfig> = mutableMapOf()
+    var CONFIRM_MENUS: MutableMap<String, ConfirmMenuConfig> = mutableMapOf()
 
     fun load() {
         // Load defaulted configs if they do not exist
@@ -25,6 +26,7 @@ object ConfigManager {
         CONFIG = loadFile("config.json", MainConfig())
 
         loadShops()
+        loadConfirmMenus()
     }
 
     private fun copyDefaults() {
@@ -34,6 +36,7 @@ object ConfigManager {
 
         attemptDefaultFileCopy(classLoader, "config.json")
         attemptDefaultDirectoryCopy(classLoader, "shops")
+        attemptDefaultDirectoryCopy(classLoader, "confirm_menus")
     }
 
     fun <T : Any> loadFile(filename: String, default: T, create: Boolean = false): T {
@@ -129,6 +132,7 @@ object ConfigManager {
                         val jsonReader = JsonReader(InputStreamReader(FileInputStream(file), Charsets.UTF_8))
                         try {
                             val config = SkiesShop.INSTANCE.gsonPretty.fromJson(JsonParser.parseReader(jsonReader), ShopConfig::class.java)
+                            config.id = id
                             SHOPS[id] = config
                             enabledFiles.add(fileName)
                         } catch (ex: Exception) {
@@ -143,6 +147,43 @@ object ConfigManager {
             }
         } else {
             Utils.printError("The 'skins' directory either does not exist or is not a directory!")
+        }
+    }
+
+    private fun loadConfirmMenus() {
+        CONFIRM_MENUS = mutableMapOf()
+
+        val dir = SkiesShop.INSTANCE.configDir.resolve("confirm_menus")
+        if (dir.exists() && dir.isDirectory) {
+            val files = Files.walk(dir.toPath())
+                .filter { path: Path -> Files.isRegularFile(path) }
+                .map { it.toFile() }
+                .collect(Collectors.toList())
+            if (files != null) {
+                SkiesShop.LOGGER.info("Found ${files.size} Confirm Menu files: ${files.map { it.name }}")
+                val enabledFiles = mutableListOf<String>()
+                for (file in files) {
+                    val fileName = file.name
+                    if (file.isFile && fileName.contains(".json")) {
+                        val id = fileName.substring(0, fileName.lastIndexOf(".json"))
+                        val jsonReader = JsonReader(InputStreamReader(FileInputStream(file), Charsets.UTF_8))
+                        try {
+                            val config = SkiesShop.INSTANCE.gsonPretty.fromJson(JsonParser.parseReader(jsonReader), ConfirmMenuConfig::class.java)
+                            config.id = id
+                            CONFIRM_MENUS[id] = config
+                            enabledFiles.add(fileName)
+                        } catch (ex: Exception) {
+                            Utils.printError("Error while trying to parse the Confirm Menu $fileName!")
+                            ex.printStackTrace()
+                        }
+                    } else {
+                        Utils.printError("File $fileName is either not a file or is not a .json file!")
+                    }
+                }
+                Utils.printInfo("Successfully read and loaded the following Confirm Menu files: $enabledFiles")
+            }
+        } else {
+            Utils.printError("The 'confirm_menus' directory either does not exist or is not a directory!")
         }
     }
 }

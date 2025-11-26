@@ -1,11 +1,9 @@
 package com.pokeskies.skiesshop.commands.subcommands
 
-import ca.landonjw.gooeylibs2.api.UIManager
 import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.tree.LiteralCommandNode
-import com.pokeskies.skiesshop.config.ConfigManager
-import com.pokeskies.skiesshop.gui.ShopGUI
+import com.pokeskies.skiesshop.SkiesShopAPI
 import com.pokeskies.skiesshop.utils.SubCommand
 import me.lucko.fabric.api.permissions.v0.Permissions
 import net.minecraft.ChatFormatting
@@ -22,7 +20,7 @@ class OpenCommand : SubCommand {
             .requires(Permissions.require("skiesshop.command.open", 2))
             .then(Commands.argument("shop", StringArgumentType.string())
                 .suggests { _, builder ->
-                    SharedSuggestionProvider.suggest(ConfigManager.SHOPS.keys.stream(), builder)
+                    SharedSuggestionProvider.suggest(SkiesShopAPI.getShopIDs().stream(), builder)
                 }
                 .then(Commands.argument("player", EntityArgument.player())
                     .requires(Permissions.require("skiesshop.command.open.others", 2))
@@ -59,18 +57,18 @@ class OpenCommand : SubCommand {
 
         fun openOther(
             ctx: CommandContext<CommandSourceStack>,
-            shop: String,
+            shopId: String,
             player: ServerPlayer,
         ): Int {
-            val shopConfig = ConfigManager.SHOPS[shop]
-            if (shopConfig == null) {
-                ctx.source.sendSystemMessage(Component.literal("Could not find a shop '$shop'!").withStyle { it.withColor(ChatFormatting.RED) })
+            val shop = SkiesShopAPI.getShop(shopId)
+            if (shop == null) {
+                ctx.source.sendSystemMessage(Component.literal("Could not find a shop '$shopId'!").withStyle { it.withColor(ChatFormatting.RED) })
                 return 1
             }
 
-            UIManager.openUIForcefully(player, ShopGUI(player, shop, shopConfig))
+            shop.open(player)
 
-            ctx.source.sendSystemMessage(Component.literal("Opened shop '$shop' for ${player.name.string}!").withStyle { it.withColor(ChatFormatting.GREEN) })
+            ctx.source.sendSystemMessage(Component.literal("Opened shop '$shopId' for ${player.name.string}!").withStyle { it.withColor(ChatFormatting.GREEN) })
 
             return 1
         }

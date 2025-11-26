@@ -3,7 +3,6 @@ package com.pokeskies.skiesshop.addons.plan
 import com.djrapitops.plan.capability.CapabilityService
 import com.djrapitops.plan.extension.ExtensionService
 
-
 object PlanHook {
     fun initialize() {
         if (!areAllCapabilitiesAvailable()) return
