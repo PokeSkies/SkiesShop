@@ -5,15 +5,12 @@ import com.pokeskies.skiesshop.data.entry.ShopEntry
 import com.pokeskies.skiesshop.data.items.GenericItem
 import com.pokeskies.skiesshop.gui.IRefreshableGui
 import com.pokeskies.skiesshop.gui.ShopGUI
-import com.pokeskies.skiesshop.utils.asNative
-import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.inventory.MenuType
 
 class ShopInstance(
     val id: String,
     val config: ShopConfig,
-    val title: Component,
     val type: MenuType<*>,
     val pages: Int,
     // <Page Number -> <Slot Index -> Shop Entry>>
@@ -70,7 +67,6 @@ class ShopInstance(
             return ShopInstance(
                 id = config.id,
                 config = config,
-                title = config.title.asNative(),
                 type = config.type.type,
                 pages = maxPages,
                 entries = entriesMap,
@@ -84,6 +80,6 @@ class ShopInstance(
     }
 
     override fun toString(): String {
-        return "ShopInstance(id='$id', config=$config, title=$title, type=$type, entries=$entries, items=$items)"
+        return "ShopInstance(id='$id', config=$config, type=$type, entries=$entries, items=$items)"
     }
 }

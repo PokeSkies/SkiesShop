@@ -3,6 +3,7 @@ package com.pokeskies.skiesshop.gui
 import com.pokeskies.skiesshop.config.ConfigManager
 import com.pokeskies.skiesshop.data.ShopInstance
 import com.pokeskies.skiesshop.data.entry.ShopEntry
+import com.pokeskies.skiesshop.placeholders.PlaceholderManager
 import com.pokeskies.skiesshop.utils.asNative
 import com.pokeskies.skiesshop.utils.clear
 import net.minecraft.network.chat.Component
@@ -78,7 +79,7 @@ class ShopGUI(
     }
 
     override fun getTitle(): Component {
-        return instance.title
+        return PlaceholderManager.parse(player, instance.config.title).asNative()
     }
 
     companion object {
