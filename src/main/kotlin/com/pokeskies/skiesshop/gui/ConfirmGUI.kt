@@ -57,8 +57,12 @@ class ConfirmGUI(
     private fun renderItems() {
         confirmMenu.items.forEach { (_, item) ->
             val button = item.asGuiItem().createButton(player)
-                .setCallback { ctx ->
-                    item.actions.forEach { (_, action) -> action.executeAction(player, this) }
+                .setCallback { clickType ->
+                    item.actions.forEach { (_, action) ->
+                        if (action.matchesClick(clickType)) {
+                            action.executeAction(player, this)
+                        }
+                    }
                 }.build()
             for (slot in item.slots) {
                 this.setSlot(slot, button)
