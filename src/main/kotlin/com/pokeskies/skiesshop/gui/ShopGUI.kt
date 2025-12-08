@@ -45,8 +45,12 @@ class ShopGUI(
     private fun renderItems() {
         (instance.items[page + 1] ?: listOf()).forEach { item ->
             val button = item.asGuiItem().createButton(player)
-                .setCallback { ctx ->
-                    item.actions.forEach { (id, action) -> action.executeAction(player, this) }
+                .setCallback { clickType ->
+                    item.actions.forEach { (id, action) ->
+                        if (action.matchesClick(clickType)) {
+                            action.executeAction(player, this)
+                        }
+                    }
                 }.build()
             for (slot in item.slots) {
                 this.setSlot(slot, button)
