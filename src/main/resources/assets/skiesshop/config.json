@@ -1,5 +1,8 @@
 {
   "debug": false,
+  "commands": [
+    "skiesshop", "shops", "shop"
+  ],
   "base_shop": "example_categories",
   "entry_lore": {
     "buy": [

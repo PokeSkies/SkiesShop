@@ -44,7 +44,7 @@ class ConfirmGUI(
             if (maxAmount != null && maxAmount < amountItem.amount) continue
 
             val button = amountItem.asGuiItem().createButton(player)
-                .setCallback { ctx ->
+                .setCallback { _ ->
                     processClick(amountItem)
                 }
 
@@ -56,7 +56,7 @@ class ConfirmGUI(
 
     private fun renderItems() {
         confirmMenu.items.forEach { (_, item) ->
-            val button = item.asGuiItem().createButton(player)
+            val button = item.createButton(player)
                 .setCallback { clickType ->
                     item.actions.forEach { (_, action) ->
                         if (action.matchesClick(clickType)) {

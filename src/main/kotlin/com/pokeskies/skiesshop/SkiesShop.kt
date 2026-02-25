@@ -20,6 +20,8 @@ import com.pokeskies.skiesshop.logging.LoggerType
 import com.pokeskies.skiesshop.placeholders.PlaceholderManager
 import com.pokeskies.skiesshop.storage.StorageType
 import com.pokeskies.skiesshop.utils.Utils
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import net.fabricmc.api.ModInitializer
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
@@ -47,6 +49,8 @@ class SkiesShop : ModInitializer {
 
         val LOGGER: Logger = LogManager.getLogger(MOD_NAME)
         val MINI_MESSAGE: MiniMessage = MiniMessage.miniMessage()
+
+        val asyncScope = CoroutineScope(Dispatchers.IO)
 
         @JvmStatic
         fun asResource(path: String): ResourceLocation {

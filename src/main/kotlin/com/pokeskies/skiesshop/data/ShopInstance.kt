@@ -79,6 +79,10 @@ class ShopInstance(
         ShopGUI(player, this, previous).open()
     }
 
+    fun getEntry(id: String): ShopEntry? {
+        return config.entries.values.find { entry -> entry.id == id }
+    }
+
     override fun toString(): String {
         return "ShopInstance(id='$id', config=$config, type=$type, entries=$entries, items=$items)"
     }

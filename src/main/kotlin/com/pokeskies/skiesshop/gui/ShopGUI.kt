@@ -44,9 +44,9 @@ class ShopGUI(
 
     private fun renderItems() {
         (instance.items[page + 1] ?: listOf()).forEach { item ->
-            val button = item.asGuiItem().createButton(player)
+            val button = item.createButton(player)
                 .setCallback { clickType ->
-                    item.actions.forEach { (id, action) ->
+                    item.actions.forEach { (_, action) ->
                         if (action.matchesClick(clickType)) {
                             action.executeAction(player, this)
                         }

@@ -26,7 +26,7 @@ import net.minecraft.world.item.component.ItemLore
 import net.minecraft.world.item.component.ResolvableProfile
 import java.util.*
 
-class GuiItem(
+open class GuiItem(
     val item: String = "",
     @SerializedName("slots", alternate = ["slot"])
     @JsonAdapter(FlexibleListAdaptorFactory::class)

@@ -34,6 +34,7 @@ abstract class ShopEntry(
     val sell: PriceOption? = null,
 ) {
     lateinit var id: String
+    var isPreset: Boolean = false
 
     open fun isValid(): Boolean {
         if (slots.isEmpty()) return false
@@ -110,8 +111,7 @@ abstract class ShopEntry(
                         id,
                         TransactionType.BUY,
                         buy.price * amount,
-                        amount,
-                        toJson()
+                        amount
                     )
                     ShopTransactionEvent.EVENT.invoker().execute(player, shopTransaction)
                     LoggerManager.logTransaction(shopTransaction)
@@ -179,8 +179,7 @@ abstract class ShopEntry(
                         id,
                         TransactionType.SELL,
                         sell.price * amountSold,
-                        amountSold,
-                        toJson()
+                        amountSold
                     )
                     ShopTransactionEvent.EVENT.invoker().execute(player, shopTransaction)
                     LoggerManager.logTransaction(shopTransaction)
@@ -237,13 +236,19 @@ abstract class ShopEntry(
         override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): ShopEntry {
             val jsonObject: JsonObject = json.getAsJsonObject()
             val value = jsonObject.get("type").asString
-            val type: ShopEntryType? = valueOfAnyCase(value)
+            val type: ShopEntryType = valueOfAnyCase(value) ?: throw JsonParseException("Invalid Shop Entry type entered!")
             return try {
-                context.deserialize(json, type!!.clazz)
+                context.deserialize(json, type.clazz)
             } catch (e: NullPointerException) {
                 throw JsonParseException("Could not deserialize Shop Entry Type: $value", e)
             }
         }
+    }
+
+    // Possible do a less intensive GSON copy method in the future
+    fun copy(): ShopEntry {
+        val json = toJson()
+        return SkiesShop.INSTANCE.gson.fromJson(json, this::class.java)
     }
 
     override fun toString(): String {

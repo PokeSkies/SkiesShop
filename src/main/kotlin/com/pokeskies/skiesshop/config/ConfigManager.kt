@@ -1,8 +1,10 @@
 package com.pokeskies.skiesshop.config
 
 import com.google.gson.JsonParser
+import com.google.gson.reflect.TypeToken
 import com.google.gson.stream.JsonReader
 import com.pokeskies.skiesshop.SkiesShop
+import com.pokeskies.skiesshop.data.entry.ShopEntry
 import com.pokeskies.skiesshop.utils.Utils
 import java.io.*
 import java.nio.file.Files
@@ -14,9 +16,13 @@ import java.util.stream.Collectors
 object ConfigManager {
     private var assetPackage = "assets/${SkiesShop.MOD_ID}"
 
+    private val presetType = object : TypeToken<Map<String, ShopEntry>>() {}.type
+
     lateinit var CONFIG: MainConfig
     var SHOPS: MutableMap<String, ShopConfig> = mutableMapOf()
     var CONFIRM_MENUS: MutableMap<String, ConfirmMenuConfig> = mutableMapOf()
+
+    var PRESETS: MutableMap<String, ShopEntry> = mutableMapOf()
 
     fun load() {
         // Load defaulted configs if they do not exist
@@ -25,6 +31,8 @@ object ConfigManager {
         // Load all files
         CONFIG = loadFile("config.json", MainConfig())
 
+        // Load presets first so shops can reference them
+        loadPresets()
         loadShops()
         loadConfirmMenus()
     }
@@ -37,6 +45,7 @@ object ConfigManager {
         attemptDefaultFileCopy(classLoader, "config.json")
         attemptDefaultDirectoryCopy(classLoader, "shops")
         attemptDefaultDirectoryCopy(classLoader, "confirm_menus")
+        attemptDefaultDirectoryCopy(classLoader, "presets")
     }
 
     fun <T : Any> loadFile(filename: String, default: T, create: Boolean = false): T {
@@ -184,6 +193,46 @@ object ConfigManager {
             }
         } else {
             Utils.printError("The 'confirm_menus' directory either does not exist or is not a directory!")
+        }
+    }
+
+    private fun loadPresets() {
+        PRESETS.clear()
+
+        val dir = SkiesShop.INSTANCE.configDir.resolve("presets")
+        if (dir.exists() && dir.isDirectory) {
+            val filePaths = Files.walk(dir.toPath())
+                .filter { p: Path -> p.toString().endsWith(".json") }
+                .collect(Collectors.toList())
+
+            for (filePath in filePaths) {
+                val file = filePath.toFile()
+                if (file.isFile) {
+                    val jsonReader = JsonReader(InputStreamReader(FileInputStream(file), Charsets.UTF_8))
+                    try {
+                        SkiesShop.LOGGER.info("Attempting to read Preset file ${file.name}...")
+
+                        val map: Map<String, ShopEntry>? = SkiesShop.INSTANCE.gson.fromJson(JsonParser.parseReader(jsonReader), presetType)
+
+                        map?.forEach { (key, entry) ->
+                            try {
+                                entry.id = key
+                                entry.isPreset = false
+                                PRESETS[key] = entry
+                            } catch (e: Exception) {
+                                Utils.printError("Failed to load preset entry '$key' from file '${file.name}': ${e.message}")
+                            }
+                        }
+
+                        Utils.printInfo("Successfully read and loaded the Preset file ${file.name}!")
+                    } catch (ex: Exception) {
+                        Utils.printError("Error while trying to parse the file ${file.name} as a Preset!")
+                        ex.printStackTrace()
+                    }
+                }
+            }
+        } else {
+            Utils.printError("The `presets` directory either does not exist or is not a directory!")
         }
     }
 }

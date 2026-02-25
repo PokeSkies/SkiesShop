@@ -25,11 +25,7 @@ class ShopConfig(
             val entries = mutableMapOf<String, ShopEntry>()
             val entriesObj = obj.getAsJsonObject("entries")
             if (entriesObj != null) {
-                for ((key, value) in entriesObj.entrySet()) {
-                    val entry = context.deserialize<ShopEntry>(value, ShopEntry::class.java)
-                    entry.id = key
-                    entries[key] = entry
-                }
+                entries.putAll(ShopEntryMapAdapter().deserialize(entriesObj, Map::class.java, context))
             }
 
             val items = mutableMapOf<String, GenericItem>()
