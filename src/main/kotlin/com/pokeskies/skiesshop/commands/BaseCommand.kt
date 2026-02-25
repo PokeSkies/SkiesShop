@@ -8,6 +8,7 @@ import com.pokeskies.skiesshop.SkiesShopAPI
 import com.pokeskies.skiesshop.commands.subcommands.DebugCommand
 import com.pokeskies.skiesshop.commands.subcommands.OpenCommand
 import com.pokeskies.skiesshop.commands.subcommands.ReloadCommand
+import com.pokeskies.skiesshop.commands.subcommands.TransactionsCommand
 import com.pokeskies.skiesshop.config.ConfigManager
 import me.lucko.fabric.api.permissions.v0.Permissions
 import net.minecraft.ChatFormatting
@@ -16,10 +17,8 @@ import net.minecraft.commands.Commands
 import net.minecraft.network.chat.Component
 
 class BaseCommand {
-    private val aliases = listOf("skiesshop", "shop", "shops")
-
     fun register(dispatcher: CommandDispatcher<CommandSourceStack>) {
-        val rootCommands: List<LiteralCommandNode<CommandSourceStack>> = aliases.map {
+        val rootCommands: List<LiteralCommandNode<CommandSourceStack>> = ConfigManager.CONFIG.commands.map {
             Commands.literal(it)
                 .requires(Permissions.require("${SkiesShop.MOD_ID}.command.base", 2))
                 .executes(::execute)

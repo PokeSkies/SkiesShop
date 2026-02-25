@@ -6,6 +6,7 @@ import com.pokeskies.skiesshop.gui.GenericClickType
 
 class MainConfig(
     var debug: Boolean = false,
+    val commands: List<String> = listOf("skiesshop", "shops", "shop"),
     @SerializedName("base_shop")
     val baseShop: String = "example",
     @SerializedName("entry_lore")
