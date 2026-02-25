@@ -103,8 +103,8 @@ class ItemShopEntry(
         return TransactionResult(true, amount = removed)
     }
 
-    override fun getDisplayName(player: ServerPlayer): Component? {
-        return if (name != null) return PlaceholderManager.parse(player, name).asNative() else null
+    override fun getDisplayName(player: ServerPlayer): String? {
+        return if (name != null) PlaceholderManager.parse(player, name) else null
     }
 
     private fun isItem(checkItem: ItemStack): Boolean {

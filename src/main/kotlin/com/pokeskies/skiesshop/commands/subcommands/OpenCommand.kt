@@ -4,7 +4,9 @@ import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.tree.LiteralCommandNode
 import com.pokeskies.skiesshop.SkiesShopAPI
+import com.pokeskies.skiesshop.config.Lang
 import com.pokeskies.skiesshop.utils.SubCommand
+import com.pokeskies.skiesshop.utils.asAdventure
 import me.lucko.fabric.api.permissions.v0.Permissions
 import net.minecraft.ChatFormatting
 import net.minecraft.commands.CommandSourceStack
@@ -62,7 +64,9 @@ class OpenCommand : SubCommand {
         ): Int {
             val shop = SkiesShopAPI.getShop(shopId)
             if (shop == null) {
-                ctx.source.sendSystemMessage(Component.literal("Could not find a shop '$shopId'!").withStyle { it.withColor(ChatFormatting.RED) })
+                Lang.ERROR_SHOP_NOT_FOUND.forEach {
+                    ctx.source.sendMessage(it.asAdventure(mapOf("%shop_id%" to shopId)))
+                }
                 return 1
             }
 

@@ -10,6 +10,8 @@ import com.pokeskies.skiesshop.commands.subcommands.OpenCommand
 import com.pokeskies.skiesshop.commands.subcommands.ReloadCommand
 import com.pokeskies.skiesshop.commands.subcommands.TransactionsCommand
 import com.pokeskies.skiesshop.config.ConfigManager
+import com.pokeskies.skiesshop.config.Lang
+import com.pokeskies.skiesshop.utils.asAdventure
 import me.lucko.fabric.api.permissions.v0.Permissions
 import net.minecraft.ChatFormatting
 import net.minecraft.commands.CommandSourceStack
@@ -48,13 +50,17 @@ class BaseCommand {
             }
 
             if (ConfigManager.CONFIG.baseShop.isEmpty()) {
-                ctx.source.sendSystemMessage(Component.literal("No base shop is set in the config!").withStyle { it.withColor(ChatFormatting.RED) })
+                Lang.ERROR_NO_BASE_SHOP.forEach {
+                    ctx.source.sendMessage(it.asAdventure())
+                }
                 return 0
             }
 
             val shop = SkiesShopAPI.getShop(ConfigManager.CONFIG.baseShop)
             if (shop == null) {
-                ctx.source.sendSystemMessage(Component.literal("Could not find the shop '$ConfigManager.CONFIG.baseShop'!").withStyle { it.withColor(ChatFormatting.RED) })
+                Lang.ERROR_SHOP_NOT_FOUND.forEach {
+                    ctx.source.sendMessage(it.asAdventure(mapOf("%shop_id%" to ConfigManager.CONFIG.baseShop)))
+                }
                 return 0
             }
 

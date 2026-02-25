@@ -5,6 +5,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.pokeskies.skiesshop.commands.BaseCommand
 import com.pokeskies.skiesshop.config.ConfigManager
+import com.pokeskies.skiesshop.config.Lang
 import com.pokeskies.skiesshop.config.ShopConfig
 import com.pokeskies.skiesshop.data.TransactionType
 import com.pokeskies.skiesshop.data.click.EntryClickOption
@@ -92,6 +93,7 @@ class SkiesShop : ModInitializer {
 
         this.configDir = File(FabricLoader.getInstance().configDirectory, MOD_ID)
         ConfigManager.load()
+        Lang.init()
 
         this.economyServices = IEconomyService.getLoadedEconomyServices()
 
@@ -142,6 +144,7 @@ class SkiesShop : ModInitializer {
         ConfigManager.load()
 
         this.economyServices = IEconomyService.getLoadedEconomyServices()
+        Lang.init()
 
         LoggerManager.load()
         SkiesShopManager.load()

@@ -5,6 +5,7 @@ import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
 import com.pokeskies.skiesshop.SkiesShop
 import com.pokeskies.skiesshop.config.GuiItem
+import com.pokeskies.skiesshop.config.Lang
 import com.pokeskies.skiesshop.config.PriceOption
 import com.pokeskies.skiesshop.data.ShopInstance
 import com.pokeskies.skiesshop.data.ShopTransaction
@@ -13,12 +14,7 @@ import com.pokeskies.skiesshop.data.TransactionType
 import com.pokeskies.skiesshop.data.entry.ShopEntryType.Companion.valueOfAnyCase
 import com.pokeskies.skiesshop.gui.IRefreshableGui
 import com.pokeskies.skiesshop.logging.LoggerManager
-import com.pokeskies.skiesshop.utils.FlexibleListAdaptorFactory
-import com.pokeskies.skiesshop.utils.ShopTransactionEvent
-import com.pokeskies.skiesshop.utils.Utils
-import com.pokeskies.skiesshop.utils.asNative
-import net.minecraft.ChatFormatting
-import net.minecraft.network.chat.Component
+import com.pokeskies.skiesshop.utils.*
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.sounds.SoundEvents
 import java.lang.reflect.Type
@@ -76,10 +72,9 @@ abstract class ShopEntry(
                 requirements.executeSuccessActions(player, gui)
             } else {
                 if (requirements.sendDenialMessage) {
-                    player.sendSystemMessage(
-                        Component.literal("You do not meet the requirements to purchase this!")
-                            .withStyle { it.withColor(ChatFormatting.RED)}
-                    )
+                    Lang.TRANSACTION_BUY_REQUIREMENTS.forEach {
+                        player.sendMessage(it.asAdventure())
+                    }
                     Utils.sendPlayerSound(player, SoundEvents.FIRE_EXTINGUISH, 0.3f, 1.0f)
                 }
                 requirements.executeDenyActions(player, gui)
@@ -98,11 +93,13 @@ abstract class ShopEntry(
                         return false
                     }
 
-                    player.sendSystemMessage(
-                        Component.literal("Purchased ${amount}x ")
-                            .append(getSafeDisplayName(player))
-                            .append(" for ${buy.price * amount}!")
-                            .withStyle { it.withColor(ChatFormatting.GREEN) })
+                    Lang.TRANSACTION_BUY.forEach {
+                        player.sendMessage(it.asAdventure(mapOf(
+                            "%transaction_amount%" to amount.toString(),
+                            "%transaction_entry_name%" to getSafeDisplayName(player),
+                            "%transaction_total%" to (buy.price * amount).toString(),
+                        )))
+                    }
                     Utils.sendPlayerSound(player, SoundEvents.ITEM_PICKUP, 0.5f, 1.0f)
                     val shopTransaction = ShopTransaction(
                         player.uuid,
@@ -118,8 +115,12 @@ abstract class ShopEntry(
                     return true
                 }
             } else {
-                player.sendSystemMessage(
-                    Component.literal("You do not have enough to purchase this shop entry!").withStyle { it.withColor(ChatFormatting.RED) })
+                Lang.TRANSACTION_BUY_BALANCE.forEach {
+                    player.sendMessage(it.asAdventure(mapOf(
+                        "%transaction_total%" to (buy.price * amount).toString(),
+                        "%transaction_currency%" to buy.currency
+                    )))
+                }
                 Utils.sendPlayerSound(player, SoundEvents.FIRE_EXTINGUISH, 0.3f, 1.0f)
             }
         } ?: run {
@@ -143,10 +144,9 @@ abstract class ShopEntry(
                 requirements.executeSuccessActions(player, gui)
             } else {
                 if (requirements.sendDenialMessage) {
-                    player.sendSystemMessage(
-                        Component.literal("You do not meet the requirements to sell this!")
-                            .withStyle { it.withColor(ChatFormatting.RED)}
-                    )
+                    Lang.TRANSACTION_SELL_REQUIREMENTS.forEach {
+                        player.sendMessage(it.asAdventure())
+                    }
                     Utils.sendPlayerSound(player, SoundEvents.FIRE_EXTINGUISH, 0.3f, 1.0f)
                 }
                 requirements.executeDenyActions(player, gui)
@@ -166,11 +166,13 @@ abstract class ShopEntry(
             val amountSold = transaction.amount
             if (amountSold > 0) {
                 if (economy.deposit(player, sell.price * amountSold, sell.currency)) {
-                    player.sendSystemMessage(
-                        Component.literal("Sold ${amountSold}x ")
-                            .append(getSafeDisplayName(player))
-                            .append(" for ${sell.price * amountSold}!")
-                            .withStyle { it.withColor(ChatFormatting.GREEN) })
+                    Lang.TRANSACTION_SELL.forEach {
+                        player.sendMessage(it.asAdventure(mapOf(
+                            "%transaction_amount%" to amountSold.toString(),
+                            "%transaction_entry_name%" to getSafeDisplayName(player),
+                            "%transaction_total%" to (sell.price * amountSold).toString(),
+                        )))
+                    }
                     Utils.sendPlayerSound(player, SoundEvents.ITEM_PICKUP, 0.5f, 1.0f)
                     val shopTransaction = ShopTransaction(
                         player.uuid,
@@ -187,17 +189,17 @@ abstract class ShopEntry(
                 } else {
                     val timestamp = Utils.getCurrentDateTimeFormatted()
                     Utils.printError("There was an error for player '${player.name.string}' while processing a sell action for '${this}' at $timestamp!")
-                    player.sendSystemMessage(
-                        Component.literal("There was an error while processing a sell action, please contact staff with the error: $timestamp")
-                            .withStyle {
-                                it.withColor(
-                                    ChatFormatting.RED
-                                )
-                            })
+                    Lang.TRANSACTION_SELL_ERROR.forEach {
+                        player.sendMessage(it.asAdventure(mapOf(
+                            "%transaction_timestamp%" to timestamp
+                        )))
+                    }
                     Utils.sendPlayerSound(player, SoundEvents.FIRE_EXTINGUISH, 0.3f, 1.0f)
                 }
             } else {
-                player.sendSystemMessage(Component.literal("You dont have the required items!").withStyle { it.withColor(ChatFormatting.RED) })
+                Lang.TRANSACTION_SELL_ITEMS.forEach {
+                    player.sendMessage(it.asAdventure())
+                }
                 Utils.sendPlayerSound(player, SoundEvents.FIRE_EXTINGUISH, 0.3f, 1.0f)
             }
         } ?: run {
@@ -219,13 +221,13 @@ abstract class ShopEntry(
         return SkiesShop.INSTANCE.gson.toJson(this)
     }
 
-    open fun getDisplayName(player: ServerPlayer): Component? {
+    open fun getDisplayName(player: ServerPlayer): String? {
         return null
     }
 
-    private fun getSafeDisplayName(player: ServerPlayer): Component {
-        if (display.name != null) return display.name.asNative()
-        return getDisplayName(player) ?: Component.translatable(getGuiItem().getItemStack(player).descriptionId)
+    private fun getSafeDisplayName(player: ServerPlayer): String {
+        if (display.name != null) return display.name
+        return getDisplayName(player) ?: "<lang:${getGuiItem().getItemStack(player).descriptionId}>"
     }
 
     internal class Adapter: JsonSerializer<ShopEntry>, JsonDeserializer<ShopEntry> {
