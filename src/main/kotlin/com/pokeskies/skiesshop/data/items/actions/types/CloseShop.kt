@@ -8,9 +8,8 @@ import com.pokeskies.skiesshop.utils.Utils
 import net.minecraft.server.level.ServerPlayer
 
 class CloseShop(
-    type: ActionType = ActionType.CLOSE_SHOP,
     click: List<GenericClickType> = listOf(GenericClickType.ANY),
-) : Action(type, click) {
+) : Action(ActionType.CLOSE_SHOP, click) {
     override fun executeAction(player: ServerPlayer, gui: IRefreshableGui) {
         Utils.printDebug("[ACTION - ${type.name}] Player(${player.gameProfile.name}): $this")
         gui.close()

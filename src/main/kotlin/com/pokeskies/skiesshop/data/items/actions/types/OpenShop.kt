@@ -9,10 +9,9 @@ import com.pokeskies.skiesshop.utils.Utils
 import net.minecraft.server.level.ServerPlayer
 
 class OpenShop(
-    type: ActionType = ActionType.OPEN_SHOP,
     click: List<GenericClickType> = listOf(GenericClickType.ANY),
     private val id: String = ""
-) : Action(type, click) {
+) : Action(ActionType.OPEN_SHOP, click) {
     override fun executeAction(player: ServerPlayer, gui: IRefreshableGui) {
         val shop = SkiesShopAPI.getShop(id)
         if (shop == null) {

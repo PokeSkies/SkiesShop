@@ -9,9 +9,8 @@ import com.pokeskies.skiesshop.utils.Utils
 import net.minecraft.server.level.ServerPlayer
 
 class FirstPage(
-    type: ActionType = ActionType.FIRST_PAGE,
     click: List<GenericClickType> = listOf(GenericClickType.ANY)
-) : Action(type, click) {
+) : Action(ActionType.FIRST_PAGE, click) {
     override fun executeAction(player: ServerPlayer, gui: IRefreshableGui) {
         Utils.printDebug("[ACTION - ${type.name}] Player(${player.gameProfile.name}) $this")
 

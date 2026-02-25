@@ -13,11 +13,10 @@ import com.pokeskies.skiesshop.utils.Utils
 import net.minecraft.server.level.ServerPlayer
 
 class CommandConsole(
-    type: ActionType = ActionType.COMMAND_CONSOLE,
     click: List<GenericClickType> = listOf(GenericClickType.ANY),
     @JsonAdapter(FlexibleListAdaptorFactory::class) @SerializedName("commands",  alternate = ["command"])
     private val commands: List<String> = emptyList()
-) : Action(type, click) {
+) : Action(ActionType.COMMAND_CONSOLE, click) {
     override fun executeAction(player: ServerPlayer, gui: IRefreshableGui) {
         val parsedCommands = commands.map { PlaceholderManager.parse(player, it) }
 

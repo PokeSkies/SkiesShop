@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName
 import com.pokeskies.skiesshop.SkiesShop
 import com.pokeskies.skiesshop.data.items.actions.Action
 import com.pokeskies.skiesshop.data.items.actions.ActionType
+import com.pokeskies.skiesshop.gui.GenericClickType
 import com.pokeskies.skiesshop.gui.IRefreshableGui
 import com.pokeskies.skiesshop.placeholders.PlaceholderManager
 import com.pokeskies.skiesshop.utils.FlexibleListAdaptorFactory
@@ -13,10 +14,10 @@ import com.pokeskies.skiesshop.utils.asNative
 import net.minecraft.server.level.ServerPlayer
 
 class MessageBroadcast(
-    type: ActionType = ActionType.BROADCAST,
+    click: List<GenericClickType> = listOf(GenericClickType.ANY),
     @JsonAdapter(FlexibleListAdaptorFactory::class) @SerializedName("message",  alternate = ["messages"])
     private val message: List<String> = emptyList()
-) : Action(type) {
+) : Action(ActionType.BROADCAST, click) {
     override fun executeAction(player: ServerPlayer, gui: IRefreshableGui) {
         val parsedMessages = message.map { PlaceholderManager.parse(player, it) }
 

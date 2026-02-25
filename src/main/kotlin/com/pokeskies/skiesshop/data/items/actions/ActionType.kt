@@ -13,7 +13,8 @@ enum class ActionType(val identifier: String, val clazz: Class<out Action>) {
     PREVIOUS_PAGE("previous_page", PreviousPage::class.java),
     LAST_PAGE("last_page", LastPage::class.java),
     FIRST_PAGE("first_page", FirstPage::class.java),
-    BACK("back", Back::class.java);
+    BACK("back", Back::class.java),
+    PLAY_SOUND("play_sound", PlaySound::class.java),;
 
     companion object {
         fun valueOfAnyCase(name: String): ActionType? {
