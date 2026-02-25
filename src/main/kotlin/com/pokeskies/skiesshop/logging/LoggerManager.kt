@@ -1,8 +1,10 @@
 package com.pokeskies.skiesshop.logging
 
+import com.pokeskies.skiesshop.SkiesShop
 import com.pokeskies.skiesshop.config.ConfigManager
 import com.pokeskies.skiesshop.data.ShopTransaction
 import java.util.*
+import java.util.concurrent.CompletableFuture
 
 object LoggerManager {
     private lateinit var logger: ILogger
@@ -23,20 +25,24 @@ object LoggerManager {
         }
     }
 
-    fun getUserLogs(uuid: UUID): List<ShopTransaction> {
-        return if (canListLogs()) {
-            logger.getUserTransactions(uuid)
-        } else {
-            emptyList()
-        }
+    fun getUserTransactions(uuid: UUID): CompletableFuture<List<ShopTransaction>> {
+        return CompletableFuture.supplyAsync({
+            if (canListLogs()) {
+                logger.getUserTransactions(uuid)
+            } else {
+                emptyList()
+            }
+        }, SkiesShop.INSTANCE.asyncExecutor)
     }
 
-    fun getAllLogs(): List<ShopTransaction> {
-        return if (canListLogs()) {
-            logger.getAllTransactions()
-        } else {
-            emptyList()
-        }
+    fun getAllLogs(): CompletableFuture<List<ShopTransaction>> {
+        return CompletableFuture.supplyAsync({
+            if (canListLogs()) {
+                logger.getAllTransactions()
+            } else {
+                emptyList()
+            }
+        }, SkiesShop.INSTANCE.asyncExecutor)
     }
 
     fun canListLogs(): Boolean {

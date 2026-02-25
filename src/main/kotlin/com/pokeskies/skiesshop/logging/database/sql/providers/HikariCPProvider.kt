@@ -50,7 +50,6 @@ abstract class HikariCPProvider(private val loggingOptions: LoggingOptions): Con
                             "`type` VARCHAR(16), " +
                             "`price` DOUBLE, " +
                             "`amount` INT, " +
-                            "`entry` TEXT" +
                             ")"
                 )
             }

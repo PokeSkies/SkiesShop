@@ -29,6 +29,7 @@ class BaseCommand {
             ReloadCommand().build(),
             DebugCommand().build(),
             OpenCommand().build(),
+            TransactionsCommand().build(),
         )
 
         rootCommands.forEach { root ->

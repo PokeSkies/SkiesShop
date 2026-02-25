@@ -10,12 +10,11 @@ public class ShopTransaction {
     public TransactionType type; // The type of transaction (BUY or SELL)
     public Double price; // The total price of the transaction
     public Integer amount; // The amount of items bought/sold
-    public String entry; // The shop entry as a JSON string
 
     public ShopTransaction() {
     }
 
-    public ShopTransaction(UUID player, Long timestamp, String shopId, String entryId, TransactionType type, Double price, Integer amount, String entry) {
+    public ShopTransaction(UUID player, Long timestamp, String shopId, String entryId, TransactionType type, Double price, Integer amount) {
         this.player = player;
         this.timestamp = timestamp;
         this.shopId = shopId;
@@ -23,7 +22,6 @@ public class ShopTransaction {
         this.type = type;
         this.price = price;
         this.amount = amount;
-        this.entry = entry;
     }
 
     @Override
@@ -36,7 +34,6 @@ public class ShopTransaction {
                 ", type=" + type +
                 ", price=" + price +
                 ", amount=" + amount +
-                ", entry='" + entry + '\'' +
                 '}';
     }
 }
