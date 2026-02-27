@@ -1,0 +1,56 @@
+{
+  "boots_preset": {
+    "type": "ITEM",
+    "page": [
+      1
+    ],
+    "item": "minecraft:leather_boots",
+    "buy": {
+      "price": 10000,
+      "economy": "IMPACTOR",
+      "currency": "impactor:dollars"
+    },
+    "sell": {
+      "price": 0,
+      "economy": "IMPACTOR",
+      "currency": "impactor:dollars"
+    }
+  },
+  "dirt_preset": {
+    "type": "ITEM",
+    "page": [
+      1
+    ],
+    "item": "minecraft:dirt",
+    "buy": {
+      "price": 1,
+      "economy": "IMPACTOR",
+      "currency": "impactor:dollars"
+    },
+    "sell": {
+      "price": 1,
+      "economy": "IMPACTOR",
+      "currency": "impactor:dollars"
+    }
+  },
+  "stone_preset": {
+    "type": "ITEM",
+    "display": {
+      "item": "minecraft:stone_bricks",
+      "name": "Stone",
+      "lore": [
+        "A block of stone"
+      ]
+    },
+    "page": [
+      1,
+      2
+    ],
+    "item": "minecraft:stone_bricks",
+    "buy": {
+      "price": 1,
+      "economy": "IMPACTOR",
+      "currency": "impactor:dollars"
+    }
+  }
+}

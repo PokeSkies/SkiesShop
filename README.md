@@ -5,7 +5,6 @@
 - Multiple Shop Entry Types
   - Item
   - Command
-  - Pokemon
 - Stock Limits (per player, and per item)
 - Requirements
 - Rotating Stock

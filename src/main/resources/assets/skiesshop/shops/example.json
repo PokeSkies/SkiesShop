@@ -40,6 +40,9 @@
         "economy": "IMPACTOR",
         "currency": "impactor:dollars"
       }
+    },
+    "boots_preset": {
+      "type": "PRESET"
     }
   },
   "items": {
