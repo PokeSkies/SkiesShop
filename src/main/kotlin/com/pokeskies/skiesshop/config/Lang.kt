@@ -12,6 +12,7 @@ import kotlin.reflect.javaType
 object Lang {
     var TRANSACTION_BUY_REQUIREMENTS = listOf("<red>You do not meet the requirements to purchase this item!")
     var TRANSACTION_BUY_BALANCE = listOf("<red>You do not have enough to purchase this item!")
+    var TRANSACTION_BUY_INVENTORY = listOf("<red>You do not have enough inventory space to purchase this item!")
     var TRANSACTION_BUY = listOf("<green>Purchased %transaction_amount%x %transaction_entry_name% for %transaction_total%!")
 
     var TRANSACTION_SELL_REQUIREMENTS = listOf("<red>You do not meet the requirements to sell this item!")
@@ -23,6 +24,7 @@ object Lang {
     var ERROR_STORAGE = listOf("<red>There was an error with the storage system! Please contact an admin.")
     var ERROR_NO_BASE_SHOP = listOf("<red>No base shop is configured! Please contact an admin.")
     var ERROR_SHOP_NOT_FOUND = listOf("<red>Shop %shop_id% not found! Please contact an admin.")
+    var ERROR_TRANSACTION = listOf("<red>There was an error while getting your purchased items! Please contact an admin.")
 
     @OptIn(ExperimentalStdlibApi::class)
     fun init() {

@@ -15,6 +15,7 @@ import com.pokeskies.skiesshop.data.entry.ShopEntryType.Companion.valueOfAnyCase
 import com.pokeskies.skiesshop.gui.IRefreshableGui
 import com.pokeskies.skiesshop.logging.LoggerManager
 import com.pokeskies.skiesshop.utils.*
+import com.pokeskies.skiesshop.utils.asAdventure
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.sounds.SoundEvents
 import java.lang.reflect.Type
@@ -51,12 +52,20 @@ abstract class ShopEntry(
         return sell != null
     }
 
+    open fun canBuy(player: ServerPlayer, amount: Int): Pair<Boolean, List<String>?> {
+        return true to null
+    }
+
+    open fun canSell(player: ServerPlayer, amount: Int): Pair<Boolean, List<String>?> {
+        return true to null
+    }
+
     open fun buy(player: ServerPlayer, amount: Int): TransactionResult {
-        return TransactionResult(false, "", 0)
+        return TransactionResult(false, listOf(), 0)
     }
 
     open fun sell(player: ServerPlayer, amount: Int): TransactionResult {
-        return TransactionResult(false, "", 0)
+        return TransactionResult(false, listOf(), 0)
     }
 
     fun tryBuy(player: ServerPlayer, shop: ShopInstance, amount: Int, gui: IRefreshableGui): Boolean {
@@ -82,14 +91,29 @@ abstract class ShopEntry(
             }
         }
 
+        // General checks
+        val check = canBuy(player, amount)
+        if (!check.first) {
+            check.second?.let { message ->
+                message.forEach {
+                    player.sendMessage(it.asAdventure())
+                }
+            }
+            Utils.sendPlayerSound(player, SoundEvents.FIRE_EXTINGUISH, 0.3f, 1.0f)
+            return false
+        }
+
         // Economy Check and Transaction
         SkiesShop.INSTANCE.getEconomyService(buy.economy)?.let { economy ->
             if (economy.balance(player, buy.currency) >= (buy.price * amount)) {
                 if (economy.withdraw(player, (buy.price * amount), buy.currency)) {
                     val transaction = buy(player, amount)
                     if (!transaction.success) {
-                        player.sendSystemMessage(transaction.response.asNative())
+                        transaction.response.forEach {
+                            player.sendMessage(it.asAdventure())
+                        }
                         Utils.sendPlayerSound(player, SoundEvents.FIRE_EXTINGUISH, 0.3f, 1.0f)
+                        economy.deposit(player, (buy.price * amount), buy.currency)
                         return false
                     }
 
@@ -154,11 +178,25 @@ abstract class ShopEntry(
             }
         }
 
+        // General checks
+        val check = canSell(player, amount)
+        if (!check.first) {
+            check.second?.let { messages ->
+                messages.forEach {
+                    player.sendMessage(it.asAdventure())
+                }
+            }
+            Utils.sendPlayerSound(player, SoundEvents.FIRE_EXTINGUISH, 0.3f, 1.0f)
+            return false
+        }
+
         // Economy Transaction
         SkiesShop.INSTANCE.getEconomyService(sell.economy)?.let { economy ->
             val transaction = sell(player, amount)
             if (!transaction.success) {
-                player.sendSystemMessage(transaction.response.asNative())
+                transaction.response.forEach {
+                    player.sendMessage(it.asAdventure())
+                }
                 Utils.sendPlayerSound(player, SoundEvents.FIRE_EXTINGUISH, 0.3f, 1.0f)
                 return false
             }

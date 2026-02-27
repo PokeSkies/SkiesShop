@@ -5,6 +5,7 @@ import com.mojang.authlib.properties.Property
 import com.mojang.authlib.properties.PropertyMap
 import com.pokeskies.skiesshop.SkiesShop
 import com.pokeskies.skiesshop.config.GuiItem
+import com.pokeskies.skiesshop.config.Lang
 import com.pokeskies.skiesshop.config.PriceOption
 import com.pokeskies.skiesshop.data.TransactionResult
 import com.pokeskies.skiesshop.data.entry.ShopEntry
@@ -58,15 +59,25 @@ class ItemShopEntry(
         }
     }
 
+    override fun canBuy(player: ServerPlayer, amount: Int): Pair<Boolean, List<String>?> {
+        val stack = getItemStack(player, amount)
+        if (stack == null) {
+            Utils.printError("Error while buying ItemShopEntry, getting ItemStack returned null ($this)")
+            return false to Lang.ERROR_TRANSACTION
+        }
+
+        if (!player.inventory.canFit(stack)) {
+            return false to Lang.TRANSACTION_BUY_INVENTORY
+        }
+
+        return true to null
+    }
+
     override fun buy(player: ServerPlayer, amount: Int): TransactionResult {
         val stack = getItemStack(player, amount)
         if (stack == null) {
             Utils.printError("Error while buying ItemShopEntry, getting ItemStack returned null ($this)")
-            return TransactionResult(false, "<red>There was an error while getting your purchased items! Please contact an admin.", 0)
-        }
-
-        if (!player.inventory.canFit(stack)) {
-            return TransactionResult(false, "<red>Not enough space in your inventory!", 0)
+            return TransactionResult(false, Lang.ERROR_TRANSACTION, 0)
         }
 
         player.inventory.placeItemBackInInventory(stack)
