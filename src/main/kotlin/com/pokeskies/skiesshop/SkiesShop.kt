@@ -10,6 +10,7 @@ import com.pokeskies.skiesshop.config.ShopConfig
 import com.pokeskies.skiesshop.data.TransactionType
 import com.pokeskies.skiesshop.data.click.EntryClickOption
 import com.pokeskies.skiesshop.data.entry.ShopEntry
+import com.pokeskies.skiesshop.data.entry.requirements.ComparisonType
 import com.pokeskies.skiesshop.data.entry.requirements.Requirement
 import com.pokeskies.skiesshop.data.items.actions.Action
 import com.pokeskies.skiesshop.economy.EconomyType
@@ -84,6 +85,7 @@ class SkiesShop : ModInitializer {
         .registerTypeAdapter(InventoryType::class.java, InventoryType.Adapter())
         .registerTypeAdapter(EconomyType::class.java, EconomyType.Adapter())
         .registerTypeAdapter(Requirement::class.java, Requirement.Adapter())
+        .registerTypeAdapter(ComparisonType::class.java, ComparisonType.Adapter())
         .registerTypeHierarchyAdapter(CompoundTag::class.java, Utils.CodecSerializer(CompoundTag.CODEC))
         .create()
     var gsonPretty: Gson = gson.newBuilder().setPrettyPrinting().create()
