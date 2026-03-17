@@ -1,4 +1,4 @@
-package com.pokeskies.skiesshop.data.entry.requirements.types.extensions.plan
+package com.pokeskies.skiesshop.data.entry.requirements.types.extensions
 
 import com.pokeskies.skiesshop.data.entry.requirements.ComparisonType
 import com.pokeskies.skiesshop.data.entry.requirements.Requirement

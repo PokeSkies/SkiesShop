@@ -1,6 +1,6 @@
 package com.pokeskies.skiesshop.data.entry.requirements
 
-import com.pokeskies.skiesshop.data.entry.requirements.types.extensions.plan.PlanPlaytimeRequirement
+import com.pokeskies.skiesshop.data.entry.requirements.types.extensions.PlanPlaytimeRequirement
 import com.pokeskies.skiesshop.data.entry.requirements.types.internal.*
 
 enum class RequirementType(val identifier: String, val clazz: Class<*>) {
@@ -10,6 +10,8 @@ enum class RequirementType(val identifier: String, val clazz: Class<*>) {
     CURRENCY("currency", CurrencyRequirement::class.java),
     DIMENSION("dimension", DimensionRequirement::class.java),
     PLACEHOLDER("placeholder", PlaceholderRequirement::class.java),
+    XP("xp", XPRequirement::class.java),
+    ADVANCEMENT("advancement", AdvancementRequirement::class.java),
 
     // Extensions
     PLAN_PLAYTIME("plan_playtime", PlanPlaytimeRequirement::class.java);
