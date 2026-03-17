@@ -41,7 +41,20 @@
         "currency": "impactor:dollars"
       }
     },
-    "boots_preset": {
+    "command_test": {
+      "type": "COMMAND",
+      "slot": 2,
+      "page": [
+        1
+      ],
+      "item": "minecraft:dirt",
+      "buy": {
+        "price": 1,
+        "economy": "IMPACTOR",
+        "currency": "impactor:dollars"
+      }
+    },
+    "example_boots": {
       "type": "PRESET"
     }
   },
