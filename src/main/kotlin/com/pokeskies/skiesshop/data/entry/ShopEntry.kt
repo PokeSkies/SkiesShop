@@ -6,7 +6,6 @@ import com.google.gson.annotations.SerializedName
 import com.pokeskies.skiesshop.SkiesShop
 import com.pokeskies.skiesshop.config.GuiItem
 import com.pokeskies.skiesshop.config.Lang
-import com.pokeskies.skiesshop.config.MainConfig.EntryLore
 import com.pokeskies.skiesshop.config.PriceOption
 import com.pokeskies.skiesshop.data.ShopInstance
 import com.pokeskies.skiesshop.data.ShopTransaction
@@ -35,7 +34,7 @@ abstract class ShopEntry(
     val buy: PriceOption? = null,
     val sell: PriceOption? = null,
     @SerializedName("entry_lore")
-    var entryLore: EntryLore? = null,
+    var entryLore: List<String>? = null,
     @SerializedName("click_options")
     var clickOptions: Map<GenericClickType, EntryClickOption>? = null,
 ) {

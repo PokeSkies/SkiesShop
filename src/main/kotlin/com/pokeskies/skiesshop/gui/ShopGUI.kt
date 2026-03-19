@@ -107,9 +107,9 @@ class ShopGUI(
                 Component.empty().withStyle { it.withItalic(false) }.append(line.asNative())
             }
 
-            val entryLore = entry.entryLore ?: instance.config.entryLore ?: ConfigManager.CONFIG.entryLore
+            val entryLore = instance.config.entryLore ?: ConfigManager.CONFIG.entryLore
 
-            val lines = if (entry.isBuyable() && entry.isSellable()) {
+            val lines = entry.entryLore ?: if (entry.isBuyable() && entry.isSellable()) {
                 entryLore.buySell
             } else if (entry.isBuyable()) {
                 entryLore.buy
