@@ -1,6 +1,8 @@
 {
   "title": "Example Shop",
   "type": "GENERIC_9x6",
+  "open_actions": {},
+  "close_actions": {},
   "entries": {
     "dirt": {
       "type": "ITEM",

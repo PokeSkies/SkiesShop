@@ -32,6 +32,12 @@
   "click_options": {
     "ANY_LEFT_CLICK": {
       "type": "OPEN_CONFIRM_MENU",
+      "sound": {
+        "id": "minecraft:ui.button.click",
+        "source": "MASTER",
+        "volume": 0.5,
+        "pitch": 0.5
+      },
       "transactions": [
         "buy"
       ],
@@ -39,6 +45,12 @@
     },
     "ANY_RIGHT_CLICK": {
       "type": "OPEN_CONFIRM_MENU",
+      "sound": {
+        "id": "minecraft:ui.button.click",
+        "source": "MASTER",
+        "volume": 0.5,
+        "pitch": 1.0
+      },
       "transactions": [
         "sell"
       ],

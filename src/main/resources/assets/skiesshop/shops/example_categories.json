@@ -1,6 +1,8 @@
 {
   "title": "Shop Categories",
   "type": "GENERIC_9x3",
+  "open_actions": {},
+  "close_actions": {},
   "entries": {},
   "items": {
     "category_1": {
