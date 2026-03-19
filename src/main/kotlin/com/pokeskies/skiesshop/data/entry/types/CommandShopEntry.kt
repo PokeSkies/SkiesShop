@@ -1,6 +1,7 @@
 package com.pokeskies.skiesshop.data.entry.types
 
 import com.pokeskies.skiesshop.config.GuiItem
+import com.pokeskies.skiesshop.config.MainConfig.EntryLore
 import com.pokeskies.skiesshop.config.PriceOption
 import com.pokeskies.skiesshop.data.TransactionResult
 import com.pokeskies.skiesshop.data.click.EntryClickOption
@@ -16,10 +17,11 @@ class CommandShopEntry(
     page: List<Int> = listOf(1),
     buy: PriceOption? = null,
     sell: PriceOption? = null,
+    entryLore: EntryLore? = null,
     clickOptions: Map<GenericClickType, EntryClickOption>? = null,
     private val commands: List<String> = emptyList(),
     private val asPlayer: Boolean = false,
-) : ShopEntry() {
+) : ShopEntry(type, display, slot, page, buy, sell, entryLore, clickOptions) {
     override fun buy(player: ServerPlayer, amount: Int): TransactionResult {
         for (command in commands) {
             val parsed = command.replace("%player%", player.name.string)

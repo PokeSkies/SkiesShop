@@ -6,6 +6,7 @@ import com.mojang.authlib.properties.PropertyMap
 import com.pokeskies.skiesshop.SkiesShop
 import com.pokeskies.skiesshop.config.GuiItem
 import com.pokeskies.skiesshop.config.Lang
+import com.pokeskies.skiesshop.config.MainConfig.EntryLore
 import com.pokeskies.skiesshop.config.PriceOption
 import com.pokeskies.skiesshop.data.TransactionResult
 import com.pokeskies.skiesshop.data.click.EntryClickOption
@@ -40,6 +41,7 @@ class ItemShopEntry(
     page: List<Int> = listOf(1),
     buy: PriceOption? = null,
     sell: PriceOption? = null,
+    entryLore: EntryLore? = null,
     clickOptions: Map<GenericClickType, EntryClickOption>? = null,
     val item: String = "",
     val amount: Int = 1,
@@ -48,7 +50,7 @@ class ItemShopEntry(
     @SerializedName("components", alternate = ["nbt"])
     val components: CompoundTag? = null,
     val customModelData: Int? = null
-) : ShopEntry(type, display, slot, page, buy, sell) {
+) : ShopEntry(type, display, slot, page, buy, sell, entryLore, clickOptions) {
     override fun isValid(): Boolean {
         if (item.isEmpty()) return false
         return super.isValid()
