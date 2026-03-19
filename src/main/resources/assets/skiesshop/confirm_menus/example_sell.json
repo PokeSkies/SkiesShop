@@ -7,64 +7,100 @@
   "close_actions": {},
   "amounts": {
     "1": {
-      "item": "minecraft:red_stained_glass",
+      "item": "minecraft:lime_stained_glass",
       "amount": 1,
       "slot": 9,
-      "type": "SELL",
-      "name": "<red>Sell 1",
+      "type": "BUY",
+      "name": "<green>Buy 1",
       "lore": [
-        "<gray>Click to sell"
-      ]
+        "<gray>Click to purchase"
+      ],
+      "sound": {
+        "id": "minecraft:entity.item.pickup",
+        "source": "MASTER",
+        "volume": 0.5,
+        "pitch": 0.1
+      }
     },
     "8": {
-      "item": "minecraft:red_stained_glass",
+      "item": "minecraft:lime_stained_glass",
       "amount": 8,
       "slot": 10,
-      "type": "SELL",
-      "name": "<red>Sell 8",
+      "type": "BUY",
+      "name": "<green>Buy 8",
       "lore": [
-        "<gray>Click to sell"
-      ]
+        "<gray>Click to purchase"
+      ],
+      "sound": {
+        "id": "minecraft:entity.item.pickup",
+        "source": "MASTER",
+        "volume": 0.5,
+        "pitch": 0.25
+      }
     },
     "16": {
-      "item": "minecraft:red_stained_glass",
+      "item": "minecraft:lime_stained_glass",
       "amount": 16,
       "slot": 11,
-      "type": "SELL",
-      "name": "<red>Sell 16",
+      "type": "BUY",
+      "name": "<green>Buy 16",
       "lore": [
-        "<gray>Click to sell"
-      ]
+        "<gray>Click to purchase"
+      ],
+      "sound": {
+        "id": "minecraft:entity.item.pickup",
+        "source": "MASTER",
+        "volume": 0.5,
+        "pitch": 0.5
+      }
     },
     "32": {
-      "item": "minecraft:red_stained_glass",
+      "item": "minecraft:lime_stained_glass",
       "amount": 32,
       "slot": 15,
-      "type": "SELL",
-      "name": "<red>Sell 32",
+      "type": "BUY",
+      "name": "<green>Buy 32",
       "lore": [
-        "<gray>Click to sell"
-      ]
+        "<gray>Click to purchase"
+      ],
+      "sound": {
+        "id": "minecraft:entity.item.pickup",
+        "source": "MASTER",
+        "volume": 0.5,
+        "pitch": 0.75
+      }
     },
     "64": {
-      "item": "minecraft:red_stained_glass",
+      "item": "minecraft:lime_stained_glass",
       "amount": 64,
       "slot": 16,
-      "type": "SELL",
-      "name": "<red>Sell 64",
+      "type": "BUY",
+      "name": "<green>Buy 64",
       "lore": [
-        "<gray>Click to sell"
-      ]
+        "<gray>Click to purchase"
+      ],
+      "sound": {
+        "id": "minecraft:entity.item.pickup",
+        "source": "MASTER",
+        "volume": 0.5,
+        "pitch": 0.9
+      }
     },
     "128": {
-      "item": "minecraft:red_stained_glass",
+      "item": "minecraft:lime_stained_glass",
       "amount": 128,
       "slot": 17,
-      "type": "SELL",
-      "name": "<red>Sell 128",
+      "type": "BUY",
+      "name": "<green>Buy 128",
       "lore": [
-        "<gray>Click to sell"
-      ]
+        "<gray>Click to purchase"
+      ],
+      "sound": {
+        "id": "minecraft:entity.item.pickup",
+        "source": "MASTER",
+        "volume": 0.5,
+        "pitch": 1.0
+      }
     }
   },
   "items": {

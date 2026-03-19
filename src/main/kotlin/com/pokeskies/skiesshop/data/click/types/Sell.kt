@@ -15,8 +15,7 @@ class Sell(
     override fun execute(player: ServerPlayer, gui: ShopGUI, entry: ShopEntry) {
         Utils.printDebug("[Entry Click Option - ${type.name}] Player(${player.gameProfile.name}) Amount($amount): $this")
         if (entry.isSellable()) {
-            sound?.playSound(player)
-            entry.trySell(player, gui.instance, amount, gui)
+            entry.trySell(player, gui.instance, amount, gui, sound)
         }
     }
 

@@ -14,7 +14,13 @@
       "name": "<green>Buy 1",
       "lore": [
         "<gray>Click to purchase"
-      ]
+      ],
+      "sound": {
+        "id": "minecraft:entity.item.pickup",
+        "source": "MASTER",
+        "volume": 0.5,
+        "pitch": 0.1
+      }
     },
     "8": {
       "item": "minecraft:lime_stained_glass",
@@ -24,7 +30,13 @@
       "name": "<green>Buy 8",
       "lore": [
         "<gray>Click to purchase"
-      ]
+      ],
+      "sound": {
+        "id": "minecraft:entity.item.pickup",
+        "source": "MASTER",
+        "volume": 0.5,
+        "pitch": 0.25
+      }
     },
     "16": {
       "item": "minecraft:lime_stained_glass",
@@ -34,7 +46,13 @@
       "name": "<green>Buy 16",
       "lore": [
         "<gray>Click to purchase"
-      ]
+      ],
+      "sound": {
+        "id": "minecraft:entity.item.pickup",
+        "source": "MASTER",
+        "volume": 0.5,
+        "pitch": 0.5
+      }
     },
     "32": {
       "item": "minecraft:lime_stained_glass",
@@ -44,7 +62,13 @@
       "name": "<green>Buy 32",
       "lore": [
         "<gray>Click to purchase"
-      ]
+      ],
+      "sound": {
+        "id": "minecraft:entity.item.pickup",
+        "source": "MASTER",
+        "volume": 0.5,
+        "pitch": 0.75
+      }
     },
     "64": {
       "item": "minecraft:lime_stained_glass",
@@ -54,7 +78,13 @@
       "name": "<green>Buy 64",
       "lore": [
         "<gray>Click to purchase"
-      ]
+      ],
+      "sound": {
+        "id": "minecraft:entity.item.pickup",
+        "source": "MASTER",
+        "volume": 0.5,
+        "pitch": 0.9
+      }
     },
     "128": {
       "item": "minecraft:lime_stained_glass",
@@ -64,7 +94,13 @@
       "name": "<green>Buy 128",
       "lore": [
         "<gray>Click to purchase"
-      ]
+      ],
+      "sound": {
+        "id": "minecraft:entity.item.pickup",
+        "source": "MASTER",
+        "volume": 0.5,
+        "pitch": 1.0
+      }
     }
   },
   "items": {

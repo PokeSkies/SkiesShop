@@ -15,8 +15,7 @@ class Buy(
     override fun execute(player: ServerPlayer, gui: ShopGUI, entry: ShopEntry) {
         Utils.printDebug("[Entry Click Option - ${type.name}] Player(${player.gameProfile.name}) Amount($amount): $this")
         if (entry.isBuyable()) {
-            sound?.playSound(player)
-            entry.tryBuy(player, gui.instance, amount, gui)
+            entry.tryBuy(player, gui.instance, amount, gui, sound)
         }
     }
 

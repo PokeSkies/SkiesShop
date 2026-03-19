@@ -3,6 +3,7 @@ package com.pokeskies.skiesshop.data.confirm
 import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
 import com.pokeskies.skiesshop.config.GuiItem
+import com.pokeskies.skiesshop.config.SoundOption
 import com.pokeskies.skiesshop.data.TransactionType
 import com.pokeskies.skiesshop.utils.FlexibleListAdaptorFactory
 import net.minecraft.nbt.CompoundTag
@@ -20,7 +21,8 @@ class ConfirmAmountItem(
     @SerializedName("components", alternate = ["nbt"])
     val components: CompoundTag? = null,
     @SerializedName("custom_model_data")
-    val customModelData: Int? = null
+    val customModelData: Int? = null,
+    val sound: SoundOption? = null
 ) {
     fun asGuiItem(): GuiItem {
         return GuiItem(

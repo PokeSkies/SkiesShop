@@ -7,6 +7,7 @@ import com.pokeskies.skiesshop.SkiesShop
 import com.pokeskies.skiesshop.config.GuiItem
 import com.pokeskies.skiesshop.config.Lang
 import com.pokeskies.skiesshop.config.PriceOption
+import com.pokeskies.skiesshop.config.SoundOption
 import com.pokeskies.skiesshop.data.ShopInstance
 import com.pokeskies.skiesshop.data.ShopTransaction
 import com.pokeskies.skiesshop.data.TransactionResult
@@ -76,7 +77,7 @@ abstract class ShopEntry(
         return TransactionResult(false, listOf(), 0)
     }
 
-    fun tryBuy(player: ServerPlayer, shop: ShopInstance, amount: Int, gui: IRefreshableGui): Boolean {
+    fun tryBuy(player: ServerPlayer, shop: ShopInstance, amount: Int, gui: IRefreshableGui, successSound: SoundOption?): Boolean {
         if (buy == null) return false
 
         // Amount Validity Check
@@ -132,7 +133,7 @@ abstract class ShopEntry(
                             "%transaction_total%" to (buy.price * amount).toString(),
                         )))
                     }
-                    Utils.sendPlayerSound(player, SoundEvents.ITEM_PICKUP, 0.5f, 1.0f)
+                    successSound?.playSound(player)
                     val shopTransaction = ShopTransaction(
                         player.uuid,
                         System.currentTimeMillis(),
@@ -163,7 +164,7 @@ abstract class ShopEntry(
         return false
     }
 
-    fun trySell(player: ServerPlayer, shop: ShopInstance, amount: Int, gui: IRefreshableGui): Boolean {
+    fun trySell(player: ServerPlayer, shop: ShopInstance, amount: Int, gui: IRefreshableGui, successSound: SoundOption?): Boolean {
         if (sell == null) return false
 
         // Amount Validity Check
@@ -219,7 +220,7 @@ abstract class ShopEntry(
                             "%transaction_total%" to (sell.price * amountSold).toString(),
                         )))
                     }
-                    Utils.sendPlayerSound(player, SoundEvents.ITEM_PICKUP, 0.5f, 1.0f)
+                    successSound?.playSound(player)
                     val shopTransaction = ShopTransaction(
                         player.uuid,
                         System.currentTimeMillis(),
