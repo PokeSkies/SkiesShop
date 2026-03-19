@@ -6,15 +6,20 @@ import com.google.gson.annotations.SerializedName
 import com.pokeskies.skiesshop.SkiesShop
 import com.pokeskies.skiesshop.config.GuiItem
 import com.pokeskies.skiesshop.config.Lang
+import com.pokeskies.skiesshop.config.MainConfig.EntryLore
 import com.pokeskies.skiesshop.config.PriceOption
 import com.pokeskies.skiesshop.data.ShopInstance
 import com.pokeskies.skiesshop.data.ShopTransaction
 import com.pokeskies.skiesshop.data.TransactionResult
 import com.pokeskies.skiesshop.data.TransactionType
+import com.pokeskies.skiesshop.data.click.EntryClickOption
 import com.pokeskies.skiesshop.data.entry.ShopEntryType.Companion.valueOfAnyCase
+import com.pokeskies.skiesshop.gui.GenericClickType
 import com.pokeskies.skiesshop.gui.IRefreshableGui
 import com.pokeskies.skiesshop.logging.LoggerManager
-import com.pokeskies.skiesshop.utils.*
+import com.pokeskies.skiesshop.utils.FlexibleListAdaptorFactory
+import com.pokeskies.skiesshop.utils.ShopTransactionEvent
+import com.pokeskies.skiesshop.utils.Utils
 import com.pokeskies.skiesshop.utils.asAdventure
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.sounds.SoundEvents
@@ -29,6 +34,10 @@ abstract class ShopEntry(
     val pages: List<Int> = listOf(1),
     val buy: PriceOption? = null,
     val sell: PriceOption? = null,
+    @SerializedName("entry_lore")
+    var entryLore: EntryLore? = null,
+    @SerializedName("click_options")
+    var clickOptions: Map<GenericClickType, EntryClickOption>? = null,
 ) {
     lateinit var id: String
     var isPreset: Boolean = false

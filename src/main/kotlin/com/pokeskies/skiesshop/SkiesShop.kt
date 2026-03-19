@@ -3,10 +3,12 @@ package com.pokeskies.skiesshop
 import com.google.common.util.concurrent.ThreadFactoryBuilder
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
 import com.pokeskies.skiesshop.commands.BaseCommand
 import com.pokeskies.skiesshop.config.ConfigManager
 import com.pokeskies.skiesshop.config.Lang
 import com.pokeskies.skiesshop.config.ShopConfig
+import com.pokeskies.skiesshop.config.ShopEntryMapAdapter
 import com.pokeskies.skiesshop.data.TransactionType
 import com.pokeskies.skiesshop.data.click.EntryClickOption
 import com.pokeskies.skiesshop.data.entry.ShopEntry
@@ -87,6 +89,7 @@ class SkiesShop : ModInitializer {
         .registerTypeAdapter(Requirement::class.java, Requirement.Adapter())
         .registerTypeAdapter(ComparisonType::class.java, ComparisonType.Adapter())
         .registerTypeHierarchyAdapter(CompoundTag::class.java, Utils.CodecSerializer(CompoundTag.CODEC))
+        .registerTypeAdapter(object : TypeToken<Map<String, ShopEntry>>() {}.type, ShopEntryMapAdapter())
         .create()
     var gsonPretty: Gson = gson.newBuilder().setPrettyPrinting().create()
 

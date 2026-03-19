@@ -8,8 +8,10 @@ import com.pokeskies.skiesshop.config.GuiItem
 import com.pokeskies.skiesshop.config.Lang
 import com.pokeskies.skiesshop.config.PriceOption
 import com.pokeskies.skiesshop.data.TransactionResult
+import com.pokeskies.skiesshop.data.click.EntryClickOption
 import com.pokeskies.skiesshop.data.entry.ShopEntry
 import com.pokeskies.skiesshop.data.entry.ShopEntryType
+import com.pokeskies.skiesshop.gui.GenericClickType
 import com.pokeskies.skiesshop.placeholders.PlaceholderManager
 import com.pokeskies.skiesshop.utils.Utils
 import com.pokeskies.skiesshop.utils.asNative
@@ -38,6 +40,7 @@ class ItemShopEntry(
     page: List<Int> = listOf(1),
     buy: PriceOption? = null,
     sell: PriceOption? = null,
+    clickOptions: Map<GenericClickType, EntryClickOption>? = null,
     val item: String = "",
     val amount: Int = 1,
     val name: String? = null,

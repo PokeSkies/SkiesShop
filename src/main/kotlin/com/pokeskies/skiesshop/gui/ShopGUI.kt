@@ -30,12 +30,14 @@ class ShopGUI(
         (instance.entries[page + 1] ?: mapOf()).forEach { (slot, entry) ->
             val builder = entry.getGuiItem().createButton(player)
             this.setSlot(slot, builder
-                .setLore(getItemLore(entry))
+                .setLore(getItemLore(entry, instance))
                 .setCallback { ctx ->
                     val genericClicks = GenericClickType.fromClickType(ctx)
 
                     for (click in genericClicks) {
-                        ConfigManager.CONFIG.clickOptions[click]?.execute(player, this, entry)
+                        (entry.clickOptions ?: instance.config.clickOptions)?.let {
+                            it[click]?.execute(player, this, entry)
+                        }
                     }
                 }
                 .build())
@@ -87,17 +89,19 @@ class ShopGUI(
     }
 
     companion object {
-        fun getItemLore(entry: ShopEntry): List<Component> {
+        fun getItemLore(entry: ShopEntry, instance: ShopInstance): List<Component> {
             val description = entry.display.lore.map { line ->
                 Component.empty().withStyle { it.withItalic(false) }.append(line.asNative())
             }
 
+            val entryLore = entry.entryLore ?: instance.config.entryLore ?: ConfigManager.CONFIG.entryLore
+
             val lines = if (entry.isBuyable() && entry.isSellable()) {
-                ConfigManager.CONFIG.entryLore.buySell
+                entryLore.buySell
             } else if (entry.isBuyable()) {
-                ConfigManager.CONFIG.entryLore.buy
+                entryLore.buy
             } else if (entry.isSellable()) {
-                ConfigManager.CONFIG.entryLore.sell
+                entryLore.sell
             } else {
                 listOf()
             }

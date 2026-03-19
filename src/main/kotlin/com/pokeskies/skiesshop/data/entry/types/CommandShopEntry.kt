@@ -3,8 +3,10 @@ package com.pokeskies.skiesshop.data.entry.types
 import com.pokeskies.skiesshop.config.GuiItem
 import com.pokeskies.skiesshop.config.PriceOption
 import com.pokeskies.skiesshop.data.TransactionResult
+import com.pokeskies.skiesshop.data.click.EntryClickOption
 import com.pokeskies.skiesshop.data.entry.ShopEntry
 import com.pokeskies.skiesshop.data.entry.ShopEntryType
+import com.pokeskies.skiesshop.gui.GenericClickType
 import net.minecraft.server.level.ServerPlayer
 
 class CommandShopEntry(
@@ -14,6 +16,7 @@ class CommandShopEntry(
     page: List<Int> = listOf(1),
     buy: PriceOption? = null,
     sell: PriceOption? = null,
+    clickOptions: Map<GenericClickType, EntryClickOption>? = null,
     private val commands: List<String> = emptyList(),
     private val asPlayer: Boolean = false,
 ) : ShopEntry() {
