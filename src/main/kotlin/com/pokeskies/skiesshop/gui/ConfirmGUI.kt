@@ -34,7 +34,7 @@ class ConfirmGUI(
     }
 
     private fun refreshShop() {
-        setSlot(confirmMenu.entrySlot, GuiElementBuilder(stack).setLore(ShopGUI.getItemLore(entry)))
+        setSlot(confirmMenu.entrySlot, GuiElementBuilder(stack))
 
         for ((_, amountItem) in confirmMenu.amounts) {
             if (amountItem.type == TransactionType.BUY && !entry.isBuyable()) continue
