@@ -21,6 +21,7 @@ class OpenShop(
 
         Utils.printDebug("[ACTION - ${type.name}] Player(${player.gameProfile.name}), Shop($shop): $this")
 
+        gui.close()
         shop.open(player, gui)
     }
 

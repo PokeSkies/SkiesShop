@@ -9,6 +9,7 @@ import com.pokeskies.skiesshop.config.MainConfig.EntryLore
 import com.pokeskies.skiesshop.data.click.EntryClickOption
 import com.pokeskies.skiesshop.data.entry.ShopEntry
 import com.pokeskies.skiesshop.data.items.GenericItem
+import com.pokeskies.skiesshop.data.items.actions.Action
 import com.pokeskies.skiesshop.gui.GenericClickType
 import com.pokeskies.skiesshop.gui.InventoryType
 import java.lang.reflect.Type
@@ -20,6 +21,10 @@ class ShopConfig(
     var entryLore: EntryLore? = null,
     @SerializedName("click_options")
     var clickOptions: Map<GenericClickType, EntryClickOption>? = null,
+    @SerializedName("open_actions")
+    val openActions: Map<String, Action> = emptyMap(),
+    @SerializedName("close_actions")
+    val closeActions: Map<String, Action> = emptyMap(),
     val entries: MutableMap<String, ShopEntry> = mutableMapOf(),
     val items: MutableMap<String, GenericItem> = mutableMapOf(),
 ) {
@@ -27,6 +32,7 @@ class ShopConfig(
 
     companion object {
         private val CLICK_OPTIONS_MAP = object : TypeToken<Map<GenericClickType, EntryClickOption>>() {}.type
+        private val ACTIONS_MAP = object : TypeToken<Map<String, Action>>() {}.type
     }
 
     internal class Deserializer : JsonDeserializer<ShopConfig> {
@@ -42,6 +48,14 @@ class ShopConfig(
             var entryLore: EntryLore? = null
             obj.getAsJsonObject("entry_lore")?.let {
                 entryLore = context.deserialize<EntryLore>(it, EntryLore::class.java)
+            }
+            val openActions: MutableMap<String, Action> = mutableMapOf()
+            obj.getAsJsonObject("open_actions")?.let {
+                openActions.putAll(context.deserialize<Map<String, Action>>(it, ACTIONS_MAP))
+            }
+            val closeActions: MutableMap<String, Action> = mutableMapOf()
+            obj.getAsJsonObject("close_actions")?.let {
+                closeActions.putAll(context.deserialize<Map<String, Action>>(it, ACTIONS_MAP))
             }
 
             val entries = mutableMapOf<String, ShopEntry>()
@@ -65,6 +79,8 @@ class ShopConfig(
                 type,
                 entryLore ?: ConfigManager.CONFIG.entryLore,
                 clickOptions ?: ConfigManager.CONFIG.clickOptions,
+                openActions,
+                closeActions,
                 entries,
                 items
             )
@@ -72,6 +88,7 @@ class ShopConfig(
     }
 
     override fun toString(): String {
-        return "ShopConfig(title='$title', type=$type, entries=$entries, items=$items, id='$id')"
+        return "ShopConfig(title='$title', type=$type, entryLore=$entryLore, clickOptions=$clickOptions, " +
+                "openActions=$openActions, closeActions=$closeActions, entries=$entries, items=$items, id='$id')"
     }
 }

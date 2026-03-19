@@ -15,8 +15,13 @@ class ShopGUI(
     previous: IRefreshableGui? = null
 ) : IRefreshableGui(instance.type, player, false, previous) {
     private var page = 0
+    private var isClosing = true // indicates if the GUI closing should cause action execution
 
     init {
+        instance.config.openActions.forEach { (id, action) ->
+            action.executeAction(player, this)
+        }
+
         refresh()
     }
 
@@ -86,6 +91,14 @@ class ShopGUI(
 
     override fun getTitle(): Component {
         return PlaceholderManager.parse(player, instance.config.title).asNative()
+    }
+
+    override fun onClose() {
+        if (isClosing) {
+            instance.config.closeActions.forEach { (_, action) ->
+                action.executeAction(player, this)
+            }
+        }
     }
 
     companion object {

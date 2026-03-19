@@ -13,6 +13,7 @@ class Back(
     override fun executeAction(player: ServerPlayer, gui: IRefreshableGui) {
         Utils.printDebug("[ACTION - ${type.name}] Player(${player.gameProfile.name}): $this")
 
+        gui.close()
         gui.previous?.open()
     }
 
