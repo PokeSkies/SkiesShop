@@ -3,6 +3,7 @@ package com.pokeskies.skiesshop.data.click.types
 import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
 import com.pokeskies.skiesshop.config.ConfigManager
+import com.pokeskies.skiesshop.config.SoundOption
 import com.pokeskies.skiesshop.data.TransactionType
 import com.pokeskies.skiesshop.data.click.EntryClickOption
 import com.pokeskies.skiesshop.data.click.EntryClickOptionType
@@ -12,14 +13,13 @@ import com.pokeskies.skiesshop.gui.ShopGUI
 import com.pokeskies.skiesshop.utils.FlexibleListAdaptorFactory
 import com.pokeskies.skiesshop.utils.Utils
 import net.minecraft.server.level.ServerPlayer
-import net.minecraft.sounds.SoundEvents
 
 class OpenConfirmMenu(
-    type: EntryClickOptionType = EntryClickOptionType.OPEN_CONFIRM_MENU,
+    sound: SoundOption? = null,
     @JsonAdapter(FlexibleListAdaptorFactory::class) @SerializedName("transactions", alternate = ["transaction"])
     val transactions: List<TransactionType> = listOf(),
     val menu: String
-) : EntryClickOption(type) {
+) : EntryClickOption(EntryClickOptionType.OPEN_CONFIRM_MENU, sound) {
     override fun execute(player: ServerPlayer, gui: ShopGUI, entry: ShopEntry) {
         Utils.printDebug("[Entry Click Option - ${type.name}] Player(${player.gameProfile.name}) Menu($menu): $this")
 
@@ -33,8 +33,7 @@ class OpenConfirmMenu(
             Utils.printError("Confirm Menu '$menu' not found! Please check your configuration.")
             return
         }
-
-        Utils.sendPlayerSound(player, SoundEvents.UI_BUTTON_CLICK.value(), 0.5f, 1.0f)
+        sound?.playSound(player)
         ConfirmGUI(player, config, gui, entry).open()
     }
 
