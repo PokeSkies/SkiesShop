@@ -9,6 +9,8 @@ import eu.pb4.sgui.api.elements.GuiElementBuilder
 import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.item.ItemStack
+import kotlin.collections.component1
+import kotlin.collections.component2
 
 class ConfirmGUI(
     player: ServerPlayer,
@@ -21,6 +23,10 @@ class ConfirmGUI(
     private var lastClick: Long = 0
 
     init {
+        confirmMenu.openActions.forEach { (id, action) ->
+            action.executeAction(player, this)
+        }
+
         entry.getGuiItem().getItemStack(player).let {
             stack = it
         }
@@ -96,6 +102,10 @@ class ConfirmGUI(
     }
 
     override fun onClose() {
+        confirmMenu.closeActions.forEach { (_, action) ->
+            action.executeAction(player, this)
+        }
+
         shopGUI.open()
     }
 }

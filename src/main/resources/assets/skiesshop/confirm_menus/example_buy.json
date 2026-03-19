@@ -3,6 +3,8 @@
   "type": "GENERIC_9x3",
   "entry_slot": 13,
   "back_on_transaction": true,
+  "open_actions": {},
+  "close_actions": {},
   "amounts": {
     "1": {
       "item": "minecraft:lime_stained_glass",
