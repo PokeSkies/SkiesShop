@@ -1,51 +1,64 @@
-# Base Features
-- Infinite Shops
-- Pagination
-- Multi-Currency Support and Item Currency?
-- Multiple Shop Entry Types
-  - Item
-  - Command
-- Stock Limits (per player, and per item)
-- Requirements
-- Rotating Stock
-- Dynamic Pricing
-- Background Items
-- Confirm Menu
+# SkiesShop
+<img height="50" src="https://camo.githubusercontent.com/a94064bebbf15dfed1fddf70437ea2ac3521ce55ac85650e35137db9de12979d/68747470733a2f2f692e696d6775722e636f6d2f6331444839564c2e706e67" alt="Requires Fabric Kotlin"/>
 
-# Upcoming Features
+A Fabric server-sided mod featuring a powerful shop system allowing you to create infinite shops with items and commands available for purchase and for sale with relative ease!
+
+More information on configuration can be found on the [Wiki](https://docs.skiesdev.com/skiesshop/getting_started/introduction/)!
+
+## Features
+- Create practically infinite Shops *(idk, haven't tested that)*
+- Customize everything about items in the inventory
+  - Multi slot definitions *(one item definition, multiple slots)*
+  - Name/Lore customization with [MiniMessage formatting](https://docs.advntr.dev/minimessage/format.html)
+  - Full access to NBT *(custom model data, Pokemon, etc.)*
+  - Pagination for shops
+- Shop entry requirements
+- Decoration Items with click Actions
+- Presets system for quick Shop Entry modifications
+- Confirmation Menu support with completely customizable layout and items
+- All customizable items support custom names, lore, enchantments, and more (anything that is a component/nbt can be applied)
+- GUI open and close Actions
+- Transaction Logging with built-in GUI for viewing a player's transactions
+- 14 action types *(for now)*
+- 7 requirement types *(for now)*
+- Economy Integrations (Impactor, Pebbles Economy)
+- Placeholder Integrations (Impactor, PlaceholderAPI)
+
+## Installation
+1. Download the latest version of the mod from [Modrinth](https://modrinth.com/mod/skiesshop).
+2. Download all required dependencies:
+   - [Fabric Language Kotlin](https://modrinth.com/mod/fabric-language-kotlin)
+3. Download any optional dependencies:
+   - [Impactor](https://modrinth.com/mod/impactor) **_(Economy, Placeholders)_**
+   - [MiniPlaceholders](https://modrinth.com/plugin/miniplaceholders) **_(Placeholders)_**
+   - [PlaceholderAPI](https://modrinth.com/mod/placeholder-api) **_(Placeholders)_**
+   - Pebbles Economy **_(Economy)_**
+   - [BEconomy](https://modrinth.com/mod/beconomy) **_(Economy)_**
+   - [CobbleDollars](https://modrinth.com/mod/cobbledollars) **_(Economy)_**
+   - [Plan](https://modrinth.com/plugin/plan) **_(Additional Requirements)_**
+4. Install the mod and dependencies into your server's `mods` folder.
+5. Configure your Shops in the `./config/skiesshop/shops/` folder.
+
+## Commands/Permissions
+| Command                        | Description                                        | Permission                                            |
+|--------------------------------|----------------------------------------------------|-------------------------------------------------------|
+| /skiesshop, /shops, /shop      | Default command                                    | skiesshop.command.base                                |
+| /shops reload                  | Reloads any configuration changes                  | skiesshop.command.reload                              |
+| /shops debug                   | Toggle the debug mode for more insight into errors | skiesshop.command.debug                               |
+| /shops open <shop_id> [player] | Open the specified Shop, optionally for a player   | skiesshop.command.open, skiesshop.command.open.others |
+| /shops transactions <player>   | Open the transactions GUI of a specific player     | skiesshop.command.transactions                        |
+
+## Planned Features
+- Item Currency Support
 - More Shop Entry Types
   - Pokemon? (can be achieved already via commands, but maybe something more complex)
   - Suggestions?
 - Stock Limits
-- Requirements
 - Rotating Stock
 - Dynamic Pricing
 
-## [EconomyShopGUI](https://www.spigotmc.org/resources/economyshopgui-premium.104414/)
-https://wiki.gpplugins.com/economyshopgui/file-configuration/shops.yml
-https://github.com/Gypopo/EconomyShopGUI-API/blob/main/src/main/java/me/gypopo/economyshopgui/api/objects/BuyPrice.java
 
-## [HydraShop](https://modrinth.com/plugin/hyphashop)
-https://github.com/YKDZ/HyphaShop/tree/main/plugin/src/main/resources
+## Support
+A community support Discord has been opened up for all Skies Development related projects! Feel free to join and ask questions or leave suggestions :)
 
-## [ShopGUI+](https://www.spigotmc.org/resources/shopgui-1-18-1-21.6515/)
-https://docs.brcdev.net/#/shopgui/shops-items-setup
-https://pastebin.com/5zXg71bi
-
-## [zShop](https://www.spigotmc.org/resources/40-zshop-advanced-shop-plugin.74073/)
-https://zshop.groupez.dev/
-https://github.com/GroupeZ-dev/zShop/tree/main/src/main/resources
-
-## [EcoShop](https://www.spigotmc.org/resources/ecoshop-%E2%AD%95-server-shop-gui-%E2%9C%85-multi-currency-support-%E2%9C%A8-custom-items-premade-shop.106529/)
-https://github.com/Auxilor/EcoShop/tree/master/eco-core/core-plugin/src/main/resources
-https://plugins.auxilor.io/ecoshop
-
-## [UltimateShop](https://www.spigotmc.org/resources/ultimateshop-premium-be-je-menus-rewards-shop-daily-shop-item-in-1-plugin-1-14-1-21-8.113069/)
-https://ultimateshop.superiormc.cn/
-https://github.com/ManyouTeam/UltimateShop
-
-## [BossShopPro](https://www.spigotmc.org/resources/bossshoppro-the-most-powerful-chest-gui-shop-menu-plugin.222/)
-https://www.spigotmc.org/wiki/bossshoppro/
-
-## [GUIShop](https://www.spigotmc.org/resources/guishop.2451/)
-https://github.com/pablo67340/GUIShop/tree/bukkit/resources
+<a class="discord-widget" href="https://discord.gg/cgBww275Fg" title="Join us on Discord"><img src="https://discordapp.com/api/guilds/1158447623989116980/embed.png?style=banner2"></a>
