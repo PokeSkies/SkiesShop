@@ -78,10 +78,14 @@ dependencies {
     })
 
     // PermissionsAPI
-    modImplementation("me.lucko:fabric-permissions-api:0.3.1")
+    modImplementation("me.lucko:fabric-permissions-api:0.3.1")?.let {
+        include(it)
+    }
 
     // GooeyLibs (server sided GUI)
-    modImplementation("eu.pb4:sgui:1.6.1+1.21.1")
+    modImplementation("eu.pb4:sgui:1.6.1+1.21.1")?.let {
+        include(it)
+    }
 
     // Placeholder Mods
     modImplementation("io.github.miniplaceholders:miniplaceholders-api:2.2.3")
