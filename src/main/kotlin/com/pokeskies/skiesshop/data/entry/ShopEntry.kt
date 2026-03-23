@@ -14,6 +14,7 @@ import com.pokeskies.skiesshop.data.TransactionResult
 import com.pokeskies.skiesshop.data.TransactionType
 import com.pokeskies.skiesshop.data.click.EntryClickOption
 import com.pokeskies.skiesshop.data.entry.ShopEntryType.Companion.valueOfAnyCase
+import com.pokeskies.skiesshop.data.entry.types.ItemShopEntry
 import com.pokeskies.skiesshop.gui.GenericClickType
 import com.pokeskies.skiesshop.gui.IRefreshableGui
 import com.pokeskies.skiesshop.logging.LoggerManager
@@ -126,9 +127,16 @@ abstract class ShopEntry(
                         return false
                     }
 
+                    var transactionAmount = amount
+                    // If the entry is a ItemShopEntry, there is a possibility that the total items bought is different
+                    // from the buy amount as the base item may have the `amount` field set, requiring a multiplication
+                    if (this is ItemShopEntry) {
+                        transactionAmount *= this.amount
+                    }
+
                     Lang.TRANSACTION_BUY.forEach {
                         player.sendMessage(it.asAdventure(mapOf(
-                            "%transaction_amount%" to amount.toString(),
+                            "%transaction_amount%" to transactionAmount.toString(),
                             "%transaction_entry_name%" to getSafeDisplayName(player),
                             "%transaction_total%" to (buy.price * amount).toString(),
                         )))

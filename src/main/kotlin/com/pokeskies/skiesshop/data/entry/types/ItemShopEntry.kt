@@ -162,7 +162,7 @@ class ItemShopEntry(
         customModelData = customModelData
     )
 
-    fun getItemStack(player: ServerPlayer, amountOverride: Int = amount): ItemStack? {
+    fun getItemStack(player: ServerPlayer, amountMultiplier: Int): ItemStack? {
         if (item.isEmpty()) {
             Utils.printError("Error while creating ItemShopEntry stack, item ID is empty ($this)")
             return null
@@ -176,7 +176,7 @@ class ItemShopEntry(
             return null
         }
 
-        var stack = ItemStack(optItem.get(), amountOverride)
+        var stack = ItemStack(optItem.get(), amount * amountMultiplier)
 
         // Handles player head parsing
         if (parsedItem.startsWith("playerhead", true)) {
