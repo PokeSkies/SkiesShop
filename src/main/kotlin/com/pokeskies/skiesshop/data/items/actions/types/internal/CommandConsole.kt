@@ -1,4 +1,4 @@
-package com.pokeskies.skiesshop.data.items.actions.types
+package com.pokeskies.skiesshop.data.items.actions.types.internal
 
 import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
@@ -12,32 +12,25 @@ import com.pokeskies.skiesshop.utils.FlexibleListAdaptorFactory
 import com.pokeskies.skiesshop.utils.Utils
 import net.minecraft.server.level.ServerPlayer
 
-class CommandPlayer(
+class CommandConsole(
     click: List<GenericClickType> = listOf(GenericClickType.ANY),
     @JsonAdapter(FlexibleListAdaptorFactory::class) @SerializedName("commands",  alternate = ["command"])
-    private val commands: List<String> = emptyList(),
-    @SerializedName("permission_level")
-    private val permissionLevel: Int? = null
-) : Action(ActionType.COMMAND_PLAYER, click) {
+    private val commands: List<String> = emptyList()
+) : Action(ActionType.COMMAND_CONSOLE, click) {
     override fun executeAction(player: ServerPlayer, gui: IRefreshableGui) {
         val parsedCommands = commands.map { PlaceholderManager.parse(player, it) }
-
-        var source = player.createCommandSourceStack()
-        if (permissionLevel != null) {
-            source = source.withPermission(permissionLevel)
-        }
 
         Utils.printDebug("[ACTION - ${type.name}] Player(${player.gameProfile.name}), Parsed Commands($parsedCommands): $this")
 
         for (command in parsedCommands) {
             SkiesShop.INSTANCE.server.commands.performPrefixedCommand(
-                source,
+                SkiesShop.INSTANCE.server.createCommandSourceStack(),
                 command
             )
         }
     }
 
     override fun toString(): String {
-        return "CommandPlayer(click=$click, commands=$commands)"
+        return "CommandConsole(click=$click, commands=$commands)"
     }
 }

@@ -4,8 +4,10 @@ import com.pokeskies.skiesshop.config.ConfigManager
 import com.pokeskies.skiesshop.data.ShopInstance
 import com.pokeskies.skiesshop.data.entry.ShopEntry
 import com.pokeskies.skiesshop.placeholders.PlaceholderManager
+import com.pokeskies.skiesshop.utils.MolangManager
 import com.pokeskies.skiesshop.utils.asNative
 import com.pokeskies.skiesshop.utils.clear
+import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ServerPlayer
 
@@ -16,6 +18,14 @@ class ShopGUI(
 ) : IRefreshableGui(instance.type, player, false, previous) {
     private var page = 0
     private var isClosing = true // indicates if the GUI closing should cause action execution
+
+    val molang: MolangManager? by lazy {
+        if (FabricLoader.getInstance().isModLoaded("cobblemon")) {
+            MolangManager(instance, player)
+        } else {
+            null
+        }
+    }
 
     init {
         instance.config.openActions.forEach { (id, action) ->

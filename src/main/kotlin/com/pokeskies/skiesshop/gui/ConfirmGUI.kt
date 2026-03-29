@@ -15,7 +15,7 @@ import kotlin.collections.component2
 class ConfirmGUI(
     player: ServerPlayer,
     private val confirmMenu: ConfirmMenuConfig,
-    private val shopGUI: ShopGUI,
+    val shopGUI: ShopGUI,
     private val entry: ShopEntry,
 ) : IRefreshableGui(confirmMenu.type.type, player, false, shopGUI) {
     private var stack: ItemStack

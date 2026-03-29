@@ -1,6 +1,18 @@
 package com.pokeskies.skiesshop.data.items.actions
 
-import com.pokeskies.skiesshop.data.items.actions.types.*
+import com.pokeskies.skiesshop.data.items.actions.types.external.Molang
+import com.pokeskies.skiesshop.data.items.actions.types.internal.Back
+import com.pokeskies.skiesshop.data.items.actions.types.internal.CloseShop
+import com.pokeskies.skiesshop.data.items.actions.types.internal.CommandConsole
+import com.pokeskies.skiesshop.data.items.actions.types.internal.CommandPlayer
+import com.pokeskies.skiesshop.data.items.actions.types.internal.FirstPage
+import com.pokeskies.skiesshop.data.items.actions.types.internal.LastPage
+import com.pokeskies.skiesshop.data.items.actions.types.internal.MessageBroadcast
+import com.pokeskies.skiesshop.data.items.actions.types.internal.MessagePlayer
+import com.pokeskies.skiesshop.data.items.actions.types.internal.NextPage
+import com.pokeskies.skiesshop.data.items.actions.types.internal.OpenShop
+import com.pokeskies.skiesshop.data.items.actions.types.internal.PlaySound
+import com.pokeskies.skiesshop.data.items.actions.types.internal.PreviousPage
 
 enum class ActionType(val identifier: String, val clazz: Class<out Action>) {
     COMMAND_CONSOLE("command_console", CommandConsole::class.java),
@@ -14,7 +26,10 @@ enum class ActionType(val identifier: String, val clazz: Class<out Action>) {
     LAST_PAGE("last_page", LastPage::class.java),
     FIRST_PAGE("first_page", FirstPage::class.java),
     BACK("back", Back::class.java),
-    PLAY_SOUND("play_sound", PlaySound::class.java);
+    PLAY_SOUND("play_sound", PlaySound::class.java),
+
+    // Extensions
+    MOLANG("molang", Molang::class.java);
 
     companion object {
         fun valueOfAnyCase(name: String): ActionType? {

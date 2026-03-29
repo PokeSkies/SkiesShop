@@ -1,4 +1,4 @@
-package com.pokeskies.skiesshop.data.items.actions.types
+package com.pokeskies.skiesshop.data.items.actions.types.internal
 
 import com.pokeskies.skiesshop.data.items.actions.Action
 import com.pokeskies.skiesshop.data.items.actions.ActionType
@@ -8,21 +8,21 @@ import com.pokeskies.skiesshop.gui.ShopGUI
 import com.pokeskies.skiesshop.utils.Utils
 import net.minecraft.server.level.ServerPlayer
 
-class PreviousPage(
+class LastPage(
     click: List<GenericClickType> = listOf(GenericClickType.ANY)
-) : Action(ActionType.PREVIOUS_PAGE, click) {
+) : Action(ActionType.LAST_PAGE, click) {
     override fun executeAction(player: ServerPlayer, gui: IRefreshableGui) {
         Utils.printDebug("[ACTION - ${type.name}] Player(${player.gameProfile.name}) $this")
 
         if (gui !is ShopGUI) {
-            Utils.printDebug("[ACTION - ${type.name}] Player(${player.gameProfile.name}) tried to execute a PreviousPage action not in a ShopGUI.")
+            Utils.printDebug("[ACTION - ${type.name}] Player(${player.gameProfile.name}) tried to execute a LastPage action not in a ShopGUI.")
             return
         }
 
-        gui.previousPage()
+        gui.lastPage()
     }
 
     override fun toString(): String {
-        return "PreviousPage()"
+        return "LastPage()"
     }
 }

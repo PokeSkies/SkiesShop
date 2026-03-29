@@ -1,4 +1,4 @@
-package com.pokeskies.skiesshop.data.items.actions.types
+package com.pokeskies.skiesshop.data.items.actions.types.internal
 
 import com.pokeskies.skiesshop.SkiesShopAPI
 import com.pokeskies.skiesshop.data.items.actions.Action

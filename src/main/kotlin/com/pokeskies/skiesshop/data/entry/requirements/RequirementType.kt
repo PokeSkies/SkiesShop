@@ -1,5 +1,6 @@
 package com.pokeskies.skiesshop.data.entry.requirements
 
+import com.pokeskies.skiesshop.data.entry.requirements.types.extensions.MolangRequirement
 import com.pokeskies.skiesshop.data.entry.requirements.types.extensions.PlanPlaytimeRequirement
 import com.pokeskies.skiesshop.data.entry.requirements.types.internal.*
 
@@ -14,7 +15,8 @@ enum class RequirementType(val identifier: String, val clazz: Class<*>) {
     ADVANCEMENT("advancement", AdvancementRequirement::class.java),
 
     // Extensions
-    PLAN_PLAYTIME("plan_playtime", PlanPlaytimeRequirement::class.java);
+    PLAN_PLAYTIME("plan_playtime", PlanPlaytimeRequirement::class.java),
+    MOLANG("molang", MolangRequirement::class.java);
 
     companion object {
         fun valueOfAnyCase(name: String): RequirementType? {

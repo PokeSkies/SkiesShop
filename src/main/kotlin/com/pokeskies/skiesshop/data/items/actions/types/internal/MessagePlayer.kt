@@ -1,4 +1,4 @@
-package com.pokeskies.skiesshop.data.items.actions.types
+package com.pokeskies.skiesshop.data.items.actions.types.internal
 
 import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
