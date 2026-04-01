@@ -17,6 +17,8 @@ import java.lang.reflect.Type
 class ShopConfig(
     val title: String,
     val type: InventoryType = InventoryType.GENERIC_9x5,
+    @SerializedName("alias_commands")
+    val aliasCommands: List<AliasCommand> = listOf(),
     @SerializedName("entry_lore")
     var entryLore: EntryLore? = null,
     @SerializedName("click_options")
@@ -57,6 +59,17 @@ class ShopConfig(
             obj.getAsJsonObject("close_actions")?.let {
                 closeActions.putAll(context.deserialize<Map<String, Action>>(it, ACTIONS_MAP))
             }
+            val aliasCommands = mutableListOf<AliasCommand>()
+            if (obj.has("alias_commands") && !obj.get("alias_commands").isJsonNull) {
+                val jsonElement = obj.get("alias_commands")
+                if (jsonElement.isJsonArray) {
+                    for (element in jsonElement.asJsonArray) {
+                        aliasCommands.add(context.deserialize<AliasCommand>(element, AliasCommand::class.java))
+                    }
+                } else {
+                    aliasCommands.add(context.deserialize<AliasCommand>(jsonElement, AliasCommand::class.java))
+                }
+            }
 
             val entries = mutableMapOf<String, ShopEntry>()
             val entriesObj = obj.getAsJsonObject("entries")
@@ -77,6 +90,7 @@ class ShopConfig(
             return ShopConfig(
                 title,
                 type,
+                aliasCommands,
                 entryLore ?: ConfigManager.CONFIG.entryLore,
                 clickOptions ?: ConfigManager.CONFIG.clickOptions,
                 openActions,

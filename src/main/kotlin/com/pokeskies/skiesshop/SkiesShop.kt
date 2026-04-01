@@ -5,10 +5,12 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.pokeskies.skiesshop.commands.BaseCommand
+import com.pokeskies.skiesshop.commands.ShopCommands
 import com.pokeskies.skiesshop.config.ConfigManager
 import com.pokeskies.skiesshop.config.Lang
 import com.pokeskies.skiesshop.config.ShopConfig
 import com.pokeskies.skiesshop.config.ShopEntryMapAdapter
+import com.pokeskies.skiesshop.config.AliasCommand
 import com.pokeskies.skiesshop.data.TransactionType
 import com.pokeskies.skiesshop.data.click.EntryClickOption
 import com.pokeskies.skiesshop.data.entry.ShopEntry
@@ -78,6 +80,7 @@ class SkiesShop : ModInitializer {
     var gson: Gson = GsonBuilder().disableHtmlEscaping()
         .registerTypeAdapter(ShopEntry::class.java, ShopEntry.Adapter())
         .registerTypeAdapter(ShopConfig::class.java, ShopConfig.Deserializer())
+        .registerTypeAdapter(AliasCommand::class.java, AliasCommand.Adapter())
         .registerTypeAdapter(Action::class.java, Action.Adapter())
         .registerTypeAdapter(GenericClickType::class.java, GenericClickType.Adapter())
         .registerTypeAdapter(EntryClickOption::class.java, EntryClickOption.Adapter())
@@ -142,6 +145,7 @@ class SkiesShop : ModInitializer {
             BaseCommand().register(
                 dispatcher
             )
+            ShopCommands().register(dispatcher)
         }
     }
 
