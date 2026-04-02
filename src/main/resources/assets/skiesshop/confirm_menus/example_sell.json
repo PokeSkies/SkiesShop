@@ -13,7 +13,7 @@
       "type": "SELL",
       "name": "<red>Sell 1",
       "lore": [
-        "<gray>Click to purchase"
+        "<gray>Click to sell"
       ],
       "sound": {
         "id": "minecraft:entity.item.pickup",
@@ -29,7 +29,7 @@
       "type": "SELL",
       "name": "<red>Sell 8",
       "lore": [
-        "<gray>Click to purchase"
+        "<gray>Click to sell"
       ],
       "sound": {
         "id": "minecraft:entity.item.pickup",
@@ -45,7 +45,7 @@
       "type": "SELL",
       "name": "<red>Sell 16",
       "lore": [
-        "<gray>Click to purchase"
+        "<gray>Click to sell"
       ],
       "sound": {
         "id": "minecraft:entity.item.pickup",
@@ -61,7 +61,7 @@
       "type": "SELL",
       "name": "<red>Sell 32",
       "lore": [
-        "<gray>Click to purchase"
+        "<gray>Click to sell"
       ],
       "sound": {
         "id": "minecraft:entity.item.pickup",
@@ -77,7 +77,7 @@
       "type": "SELL",
       "name": "<red>Sell 64",
       "lore": [
-        "<gray>Click to purchase"
+        "<gray>Click to sell"
       ],
       "sound": {
         "id": "minecraft:entity.item.pickup",
@@ -93,7 +93,7 @@
       "type": "SELL",
       "name": "<red>Sell 128",
       "lore": [
-        "<gray>Click to purchase"
+        "<gray>Click to sell"
       ],
       "sound": {
         "id": "minecraft:entity.item.pickup",
