@@ -31,8 +31,9 @@ class ShopEntryMapAdapter : JsonSerializer<MutableMap<String, ShopEntry>>, JsonD
                 val typeStr = entryObj.get("type")?.asString
                 val isPreset = typeStr?.let { ShopEntryType.valueOfAnyCase(it) } == ShopEntryType.PRESET
                 val entry: ShopEntry = if (isPreset) {
-                    val preset = ConfigManager.PRESETS[key]
-                        ?: throw JsonParseException("Could not find preset with id '$key' for map key '$key'")
+                    val presetId = entryObj.get("preset")?.asString ?: key
+                    val preset = ConfigManager.PRESETS[presetId]
+                        ?: throw JsonParseException("Could not find preset with id '$presetId' for map key '$key'")
                     preset.copy()
                 } else {
                     context.deserialize(value, ShopEntry::class.java)

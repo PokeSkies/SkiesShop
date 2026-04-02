@@ -16,7 +16,7 @@ import java.util.stream.Collectors
 object ConfigManager {
     private var assetPackage = "assets/${SkiesShop.MOD_ID}"
 
-    private val presetType = object : TypeToken<Map<String, ShopEntry>>() {}.type
+    private val presetMapType = object : TypeToken<Map<String, ShopEntry>>() {}.type
 
     lateinit var CONFIG: MainConfig
     var SHOPS: MutableMap<String, ShopConfig> = mutableMapOf()
@@ -212,15 +212,31 @@ object ConfigManager {
                     try {
                         SkiesShop.LOGGER.info("Attempting to read Preset file ${file.name}...")
 
-                        val map: Map<String, ShopEntry>? = SkiesShop.INSTANCE.gson.fromJson(JsonParser.parseReader(jsonReader), presetType)
-
-                        map?.forEach { (key, entry) ->
+                        val element = JsonParser.parseReader(jsonReader)
+                        if (element.isJsonObject && element.asJsonObject.has("type")) {
+                            // Single ShopEntry definition (file name is the key here)
+                            val entry: ShopEntry = SkiesShop.INSTANCE.gson.fromJson(element, ShopEntry::class.java)
+                            val key = file.name.substring(0, file.name.lastIndexOf(".json"))
                             try {
                                 entry.id = key
                                 entry.isPreset = false
                                 PRESETS[key] = entry
                             } catch (e: Exception) {
-                                Utils.printError("Failed to load preset entry '$key' from file '${file.name}': ${e.message}")
+                                Utils.printError("Failed to load entry '$key' from the Preset File ${file.name}: ${e.message}")
+                            }
+                        } else {
+                            // Multi ShopEntry definition (each map key is the shop entry key)
+                            val map: Map<String, ShopEntry>? = SkiesShop.INSTANCE.gson.fromJson(element, presetMapType)
+                            map?.forEach { (key, entry) ->
+                                try {
+                                    entry.id = key
+                                    entry.isPreset = false
+                                    PRESETS[key] = entry
+                                } catch (e: Exception) {
+                                    Utils.printError("Failed to load entry '$key' from the Preset File ${file.name}: ${e.message}")
+                                }
+                            } ?: run {
+                                Utils.printInfo("No entries were found in the Preset File ${file.name}!")
                             }
                         }
 
