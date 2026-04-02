@@ -23,7 +23,7 @@ class ConfirmGUI(
     private var lastClick: Long = 0
 
     init {
-        confirmMenu.openActions.forEach { (id, action) ->
+        confirmMenu.openActions?.forEach { (id, action) ->
             action.executeAction(player, this)
         }
 
@@ -102,7 +102,7 @@ class ConfirmGUI(
     }
 
     override fun onClose() {
-        confirmMenu.closeActions.forEach { (_, action) ->
+        confirmMenu.closeActions?.forEach { (_, action) ->
             action.executeAction(player, this)
         }
 

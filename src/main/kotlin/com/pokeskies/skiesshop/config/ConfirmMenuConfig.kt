@@ -7,16 +7,16 @@ import com.pokeskies.skiesshop.data.items.actions.Action
 import com.pokeskies.skiesshop.gui.InventoryType
 
 class ConfirmMenuConfig(
-    val title: String,
-    val type: InventoryType,
+    val title: String = "",
+    val type: InventoryType = InventoryType.GENERIC_9x3,
     @SerializedName("entry_slot")
-    val entrySlot: Int,
+    val entrySlot: Int = 13,
     @SerializedName("back_on_transaction", alternate = ["back_on_purchase"])
     val backOnTransaction: Boolean = true,
     @SerializedName("open_actions")
-    val openActions: Map<String, Action> = emptyMap(),
+    val openActions: Map<String, Action>? = emptyMap(),
     @SerializedName("close_actions")
-    val closeActions: Map<String, Action> = emptyMap(),
+    val closeActions: Map<String, Action>? = emptyMap(),
     val amounts: Map<String, ConfirmAmountItem> = emptyMap(),
     val items: Map<String, GenericItem> = emptyMap()
 ) {
