@@ -42,8 +42,8 @@ object ItemCompareUtils {
         }
 
         when (comparison.mode) {
-            StrictnessLevel.NONE -> return true
-            StrictnessLevel.CONTAINS -> {
+            ComparisonMode.TYPE -> return true
+            ComparisonMode.CONTAINS -> {
                 val aComponents = a.components
                 val bComponents = b.components
 
@@ -53,7 +53,7 @@ object ItemCompareUtils {
                     }
                 }
             }
-            StrictnessLevel.EXACT -> {
+            ComparisonMode.EXACT -> {
                 val aComponents = a.components
                 val bComponents = b.components
 
@@ -69,7 +69,7 @@ object ItemCompareUtils {
     }
 
     class ComparisonOption(
-        val mode: StrictnessLevel = StrictnessLevel.NONE,
+        val mode: ComparisonMode = ComparisonMode.TYPE,
         @SerializedName("anti_components")
         val antiComponents: CompoundTag? = null,
     ) {
@@ -78,34 +78,34 @@ object ItemCompareUtils {
         }
     }
 
-    enum class StrictnessLevel {
-        NONE, // Item Types just need to be equal
+    enum class ComparisonMode {
+        TYPE, // Item Types just need to be equal
         CONTAINS, // Components on A must be on B, but B may have extras
         EXACT; // A must match B exactly (all components the same)
 
         companion object {
-            fun valueOfAnyCase(name: String): StrictnessLevel? {
-                for (type in StrictnessLevel.entries) {
+            fun valueOfAnyCase(name: String): ComparisonMode? {
+                for (type in ComparisonMode.entries) {
                     if (name.equals(type.name, true)) return type
                 }
                 return null
             }
         }
 
-        internal class Adapter: JsonSerializer<StrictnessLevel>, JsonDeserializer<StrictnessLevel> {
-            override fun serialize(src: StrictnessLevel, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
+        internal class Adapter: JsonSerializer<ComparisonMode>, JsonDeserializer<ComparisonMode> {
+            override fun serialize(src: ComparisonMode, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
                 return JsonPrimitive(src.name)
             }
 
-            override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): StrictnessLevel {
-                val strictnessLevel = StrictnessLevel.valueOfAnyCase(json.asString)
+            override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): ComparisonMode {
+                val comparisonMode = ComparisonMode.valueOfAnyCase(json.asString)
 
-                if (strictnessLevel == null) {
-                    Utils.printError("Could not deserialize Strictness Level '${json.asString}', using NONE as a default!")
-                    return NONE
+                if (comparisonMode == null) {
+                    Utils.printError("Could not deserialize Strictness Level '${json.asString}', using TYPE as a default!")
+                    return TYPE
                 }
 
-                return strictnessLevel
+                return comparisonMode
             }
         }
     }

@@ -93,7 +93,7 @@ class SkiesShop : ModInitializer {
         .registerTypeAdapter(EconomyType::class.java, EconomyType.Adapter())
         .registerTypeAdapter(Requirement::class.java, Requirement.Adapter())
         .registerTypeAdapter(ComparisonType::class.java, ComparisonType.Adapter())
-        .registerTypeAdapter(ItemCompareUtils.StrictnessLevel::class.java, ItemCompareUtils.StrictnessLevel.Adapter())
+        .registerTypeAdapter(ItemCompareUtils.ComparisonMode::class.java, ItemCompareUtils.ComparisonMode.Adapter())
         .registerTypeHierarchyAdapter(CompoundTag::class.java, CompoundTagAdaptor())
         .registerTypeAdapter(object : TypeToken<Map<String, ShopEntry>>() {}.type, ShopEntryMapAdapter())
         .create()
