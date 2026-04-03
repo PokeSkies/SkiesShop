@@ -14,8 +14,6 @@ import net.minecraft.core.component.DataComponentPatch
 import net.minecraft.core.component.DataComponents
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.nbt.CompoundTag
-import net.minecraft.nbt.ListTag
-import net.minecraft.nbt.StringTag
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerPlayer
@@ -97,7 +95,7 @@ open class GuiItem(
         }
 
         if (components != null) {
-            DataComponentPatch.CODEC.decode(SkiesShop.INSTANCE.nbtOpts, parseNBT(player, components)).result().ifPresent { result ->
+            DataComponentPatch.CODEC.decode(SkiesShop.INSTANCE.nbtOpts, Utils.parseNBT(player, components)).result().ifPresent { result ->
                 stack.applyComponents(result.first)
             }
         }
@@ -135,39 +133,6 @@ open class GuiItem(
 
     fun createButton(player: ServerPlayer): GuiElementBuilder {
         return GuiElementBuilder(getItemStack(player))
-    }
-
-    private fun parseNBT(player: ServerPlayer, tag: CompoundTag): CompoundTag {
-        val parsedNBT = tag.copy()
-        for (key in parsedNBT.allKeys) {
-            var element = parsedNBT.get(key)
-            if (element != null) {
-                when (element) {
-                    is StringTag -> {
-                        element = StringTag.valueOf(PlaceholderManager.parse(player, element.asString))
-                    }
-                    is ListTag -> {
-                        val parsed = ListTag()
-                        for (entry in element) {
-                            if (entry is StringTag) {
-                                parsed.add(StringTag.valueOf(PlaceholderManager.parse(player, entry.asString)))
-                            } else {
-                                parsed.add(entry)
-                            }
-                        }
-                        element = parsed
-                    }
-                    is CompoundTag -> {
-                        element = parseNBT(player, element)
-                    }
-                }
-
-                if (element != null) {
-                    parsedNBT.put(key, element)
-                }
-            }
-        }
-        return parsedNBT
     }
 
     override fun toString(): String {

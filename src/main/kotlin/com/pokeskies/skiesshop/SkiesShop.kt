@@ -25,6 +25,8 @@ import com.pokeskies.skiesshop.logging.LoggerManager
 import com.pokeskies.skiesshop.logging.LoggerType
 import com.pokeskies.skiesshop.placeholders.PlaceholderManager
 import com.pokeskies.skiesshop.storage.StorageType
+import com.pokeskies.skiesshop.utils.CompoundTagAdaptor
+import com.pokeskies.skiesshop.utils.ItemCompareUtils
 import com.pokeskies.skiesshop.utils.Utils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -91,7 +93,8 @@ class SkiesShop : ModInitializer {
         .registerTypeAdapter(EconomyType::class.java, EconomyType.Adapter())
         .registerTypeAdapter(Requirement::class.java, Requirement.Adapter())
         .registerTypeAdapter(ComparisonType::class.java, ComparisonType.Adapter())
-        .registerTypeHierarchyAdapter(CompoundTag::class.java, Utils.CodecSerializer(CompoundTag.CODEC))
+        .registerTypeAdapter(ItemCompareUtils.StrictnessLevel::class.java, ItemCompareUtils.StrictnessLevel.Adapter())
+        .registerTypeHierarchyAdapter(CompoundTag::class.java, CompoundTagAdaptor())
         .registerTypeAdapter(object : TypeToken<Map<String, ShopEntry>>() {}.type, ShopEntryMapAdapter())
         .create()
     var gsonPretty: Gson = gson.newBuilder().setPrettyPrinting().create()

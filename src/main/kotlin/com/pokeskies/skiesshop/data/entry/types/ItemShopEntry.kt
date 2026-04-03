@@ -13,6 +13,7 @@ import com.pokeskies.skiesshop.data.entry.ShopEntry
 import com.pokeskies.skiesshop.data.entry.ShopEntryType
 import com.pokeskies.skiesshop.gui.GenericClickType
 import com.pokeskies.skiesshop.placeholders.PlaceholderManager
+import com.pokeskies.skiesshop.utils.ItemCompareUtils
 import com.pokeskies.skiesshop.utils.Utils
 import com.pokeskies.skiesshop.utils.asNative
 import com.pokeskies.skiesshop.utils.canFit
@@ -20,8 +21,6 @@ import net.minecraft.core.component.DataComponentPatch
 import net.minecraft.core.component.DataComponents
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.nbt.CompoundTag
-import net.minecraft.nbt.ListTag
-import net.minecraft.nbt.StringTag
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerPlayer
@@ -31,7 +30,6 @@ import net.minecraft.world.item.component.CustomModelData
 import net.minecraft.world.item.component.ItemLore
 import net.minecraft.world.item.component.ResolvableProfile
 import java.util.*
-import kotlin.jvm.optionals.getOrNull
 
 class ItemShopEntry(
     type: ShopEntryType = ShopEntryType.ITEM,
@@ -48,7 +46,8 @@ class ItemShopEntry(
     val lore: List<String> = emptyList(),
     @SerializedName("components", alternate = ["nbt"])
     val components: CompoundTag? = null,
-    val customModelData: Int? = null
+    val customModelData: Int? = null,
+    val comparison: ItemCompareUtils.ComparisonOption = ItemCompareUtils.ComparisonOption()
 ) : ShopEntry(type, display, slot, page, buy, sell, entryLore, clickOptions) {
     override fun isValid(): Boolean {
         if (item.isEmpty()) return false
@@ -94,9 +93,14 @@ class ItemShopEntry(
         val matchedSlots: MutableList<Int> = mutableListOf()
         for ((i, stack) in player.inventory.items.withIndex()) {
             if (!stack.isEmpty) {
-                if (isItem(stack)) {
+                if (isItem(player, stack)) {
                     amountFound += stack.count
                     matchedSlots.add(i)
+
+                    // break early if amount found matches what we need to prevent unnecessary checks
+                    if (amountFound >= amount) {
+                        break
+                    }
                 }
             }
         }
@@ -122,35 +126,9 @@ class ItemShopEntry(
         return if (name != null) PlaceholderManager.parse(player, name) else null
     }
 
-    private fun isItem(checkItem: ItemStack): Boolean {
-        val newItem = BuiltInRegistries.ITEM.getOptional(ResourceLocation.parse(item))
-        if (newItem.isEmpty) {
-            return false
-        }
-        if (!checkItem.item.equals(newItem.get())) {
-            return false
-        }
-
-        var nbtCopy = components?.copy()
-
-        if (customModelData != null) {
-            if (nbtCopy != null) {
-                nbtCopy.putInt("minecraft:custom_model_data", customModelData)
-            } else {
-                val newNBT = CompoundTag()
-                newNBT.putInt("minecraft:custom_model_data", customModelData)
-                nbtCopy = newNBT
-            }
-        }
-
-        if (nbtCopy != null) {
-            val checkNBT = DataComponentPatch.CODEC.encodeStart(SkiesShop.INSTANCE.nbtOpts, checkItem.componentsPatch).result().getOrNull() ?: return false
-
-            if (checkNBT != nbtCopy)
-                return false
-        }
-
-        return true
+    private fun isItem(player: ServerPlayer, checkItem: ItemStack): Boolean {
+        val stack = getItemStack(player, 1) ?: return false
+        return ItemCompareUtils.matches(player, stack, checkItem, comparison)
     }
 
     fun asGuiItem(): GuiItem = GuiItem(
@@ -222,7 +200,7 @@ class ItemShopEntry(
         }
 
         if (components != null) {
-            DataComponentPatch.CODEC.decode(SkiesShop.INSTANCE.nbtOpts, parseNBT(player, components)).result().ifPresent { result ->
+            DataComponentPatch.CODEC.decode(SkiesShop.INSTANCE.nbtOpts, Utils.parseNBT(player, components)).result().ifPresent { result ->
                 stack.applyComponents(result.first)
             }
         }
@@ -256,39 +234,6 @@ class ItemShopEntry(
         stack.applyComponents(dataComponents.build())
 
         return stack
-    }
-
-    private fun parseNBT(player: ServerPlayer, tag: CompoundTag): CompoundTag {
-        val parsedNBT = tag.copy()
-        for (key in parsedNBT.allKeys) {
-            var element = parsedNBT.get(key)
-            if (element != null) {
-                when (element) {
-                    is StringTag -> {
-                        element = StringTag.valueOf(PlaceholderManager.parse(player, element.asString))
-                    }
-                    is ListTag -> {
-                        val parsed = ListTag()
-                        for (entry in element) {
-                            if (entry is StringTag) {
-                                parsed.add(StringTag.valueOf(PlaceholderManager.parse(player, entry.asString)))
-                            } else {
-                                parsed.add(entry)
-                            }
-                        }
-                        element = parsed
-                    }
-                    is CompoundTag -> {
-                        element = parseNBT(player, element)
-                    }
-                }
-
-                if (element != null) {
-                    parsedNBT.put(key, element)
-                }
-            }
-        }
-        return parsedNBT
     }
 
     override fun toString(): String {

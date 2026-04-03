@@ -5,8 +5,12 @@ import com.mojang.serialization.Codec
 import com.mojang.serialization.JsonOps
 import com.pokeskies.skiesshop.SkiesShop
 import com.pokeskies.skiesshop.config.ConfigManager
+import com.pokeskies.skiesshop.placeholders.PlaceholderManager
 import net.minecraft.core.Holder
 import net.minecraft.core.Registry
+import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.ListTag
+import net.minecraft.nbt.StringTag
 import net.minecraft.network.protocol.game.ClientboundSoundPacket
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerPlayer
@@ -33,6 +37,39 @@ object Utils {
 
     fun printInfo(message: String) {
         SkiesShop.LOGGER.info("[${SkiesShop.MOD_NAME}] $message")
+    }
+
+    fun parseNBT(player: ServerPlayer, tag: CompoundTag): CompoundTag {
+        val parsedNBT = tag.copy()
+        for (key in parsedNBT.allKeys) {
+            var element = parsedNBT.get(key)
+            if (element != null) {
+                when (element) {
+                    is StringTag -> {
+                        element = StringTag.valueOf(PlaceholderManager.parse(player, element.asString))
+                    }
+                    is ListTag -> {
+                        val parsed = ListTag()
+                        for (entry in element) {
+                            if (entry is StringTag) {
+                                parsed.add(StringTag.valueOf(PlaceholderManager.parse(player, entry.asString)))
+                            } else {
+                                parsed.add(entry)
+                            }
+                        }
+                        element = parsed
+                    }
+                    is CompoundTag -> {
+                        element = parseNBT(player, element)
+                    }
+                }
+
+                if (element != null) {
+                    parsedNBT.put(key, element)
+                }
+            }
+        }
+        return parsedNBT
     }
 
     // Sends a player a sound packet
@@ -98,7 +135,7 @@ object Utils {
         override fun deserialize(json: JsonElement?, typeOfT: Type?, context: JsonDeserializationContext?): T? {
             return try {
                 codec.decode(JsonOps.INSTANCE, json).orThrow.first
-            } catch (e: Throwable) {
+            } catch (_: Throwable) {
                 printError("There was an error while deserializing a Codec: $codec")
                 null
             }
@@ -110,7 +147,7 @@ object Utils {
                     codec.encodeStart(JsonOps.INSTANCE, src).orThrow
                 else
                     JsonNull.INSTANCE
-            } catch (e: Throwable) {
+            } catch (_: Throwable) {
                 printError("There was an error while serializing a Codec: $codec")
                 JsonNull.INSTANCE
             }
