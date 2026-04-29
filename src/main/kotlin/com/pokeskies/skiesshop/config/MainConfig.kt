@@ -9,6 +9,8 @@ class MainConfig(
     val commands: List<String> = listOf("skiesshop", "shops", "shop"),
     @SerializedName("base_shop")
     val baseShop: String = "example",
+    @SerializedName("truncate_prices")
+    val truncatePrices: Boolean = false,
     @SerializedName("entry_lore")
     var entryLore: EntryLore = EntryLore(),
     @SerializedName("click_options")
@@ -28,6 +30,7 @@ class MainConfig(
     }
 
     override fun toString(): String {
-        return "MainConfig(debug=$debug, entryLore=$entryLore, clickOptions=$clickOptions, storage=$storage, logging=$logging)"
+        return "MainConfig(debug=$debug, entryLore=$entryLore, truncatePrices=$truncatePrices, " +
+                "clickOptions=$clickOptions, storage=$storage, logging=$logging)"
     }
 }

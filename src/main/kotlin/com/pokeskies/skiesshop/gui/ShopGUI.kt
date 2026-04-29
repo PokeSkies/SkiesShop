@@ -1,6 +1,7 @@
 package com.pokeskies.skiesshop.gui
 
 import com.pokeskies.skiesshop.config.ConfigManager
+import com.pokeskies.skiesshop.config.PriceOption
 import com.pokeskies.skiesshop.data.ShopInstance
 import com.pokeskies.skiesshop.data.entry.ShopEntry
 import com.pokeskies.skiesshop.placeholders.PlaceholderManager
@@ -136,8 +137,8 @@ class ShopGUI(
                 } else {
                     lore.add(
                         Component.empty().withStyle { it.withItalic(false) }.append(
-                            line.replace("%buy_price%", (entry.buy?.price ?: 0.0).toString())
-                                .replace("%sell_price%", (entry.sell?.price ?: 0.0).toString())
+                            line.replace("%buy_price%", PriceOption.formatPricing(entry.buy?.price ?: 0.0))
+                                .replace("%sell_price%", PriceOption.formatPricing(entry.sell?.price ?: 0.0))
                                 .replace("%buy_price_currency%", entry.buy?.getCurrencyName() ?: "")
                                 .replace("%sell_price_currency%", entry.sell?.getCurrencyName() ?: "")
                                 .asNative()

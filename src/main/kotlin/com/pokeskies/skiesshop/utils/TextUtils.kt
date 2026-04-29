@@ -4,6 +4,7 @@ import com.pokeskies.skiesshop.SkiesShop
 import com.pokeskies.skiesshop.utils.TextUtils.plainSerializer
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import net.minecraft.network.chat.Component
+import java.math.BigDecimal
 
 object TextUtils {
     val plainSerializer = PlainTextComponentSerializer.plainText()
@@ -43,4 +44,9 @@ fun net.kyori.adventure.text.Component.asPlain(): String {
 
 fun Component.asPlain(): String {
     return plainSerializer.serialize(this.asComponent())
+}
+
+fun Double.trimTrailingZeros(): String = when {
+    this.isNaN() || this.isInfinite() -> this.toString()
+    else -> BigDecimal.valueOf(this).stripTrailingZeros().toPlainString()
 }

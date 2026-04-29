@@ -4,6 +4,7 @@
     "skiesshop", "shops", "shop"
   ],
   "base_shop": "example_categories",
+  "truncate_prices": true,
   "entry_lore": {
     "buy": [
       "%display_item_lore%",
