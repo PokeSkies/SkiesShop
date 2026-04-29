@@ -49,7 +49,9 @@
       "page": [
         1
       ],
-      "item": "minecraft:dirt",
+      "commands": [
+        "give %player% dirt 1"
+      ],
       "buy": {
         "price": 1,
         "economy": "IMPACTOR",
