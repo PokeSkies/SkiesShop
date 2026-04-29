@@ -4,7 +4,7 @@ import com.pokeskies.skiesshop.economy.IEconomyService
 import com.pokeskies.skiesshop.utils.Utils
 import net.kyori.adventure.text.Component
 import net.minecraft.server.level.ServerPlayer
-import org.beconomy.api.BEconomy
+import org.krripe.beconomy.api.BEconomy
 import java.math.BigDecimal
 
 class BEconomyService : IEconomyService {
