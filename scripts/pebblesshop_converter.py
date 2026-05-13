@@ -77,8 +77,23 @@ def parse_nbt(nbt):
     if not nbt or nbt == "{}":
         return None
     if isinstance(nbt, dict):
+        print("is dict")
         return nbt
     try:
+        nbt = re.sub(r'([{,])\s*([a-zA-Z0-9_]+)\s*:', r'\1"\2":', nbt)
+
+        # Convert single-quoted strings to double-quoted, escaping any inner double quotes
+        def parse_single_to_double(m):
+            inner = m.group(1).replace('"', '\\"')
+            return f'"{inner}"'
+
+        nbt = re.sub(r"'([^']*)'", parse_single_to_double, nbt)
+
+        nbt = nbt.replace("\"CustomModelData\"", "\"minecraft:custom_model_data\"")
+        nbt = nbt.replace("\"Name\"", "\"minecraft:item_name\"")
+        nbt = nbt.replace("\"Lore\"", "\"minecraft:lore\"")
+        nbt = nbt.replace("\"Unbreakable\":1", "\"minecraft:unbreakable\":{}")
+
         return json.loads(nbt)
     except json.JSONDecodeError:
         return nbt
@@ -108,6 +123,16 @@ def parse_shop_catalog_entries(items, first_index=0, page=1):
                 "currency": currency
             }
         if entry_type == "COMMAND":
+            display = {
+                "item": item['material']
+            }
+
+            if 'nbt' in item:
+                nbt = parse_nbt(item.get('nbt'))
+                if nbt is not None:
+                    display['nbt'] = nbt
+
+            entry_map['display'] = display
             entry_map['commands'] = [
                 fix_placeholders(command)
                 for command in item.get('commands', [])
@@ -123,12 +148,14 @@ def parse_shop_catalog_entries(items, first_index=0, page=1):
                     "currency": currency
                 }
 
+        display_target = entry_map['display'] if entry_type == "COMMAND" else entry_map
+
         if 'name' in item:
-            entry_map['name'] = parse_color(item['name'])
+            display_target['name'] = parse_color(item['name'])
 
         lore = [parse_color(line) for line in item.get('description', [])]
         if lore:
-            entry_map['lore'] = lore
+            display_target['lore'] = lore
 
         if entry_type == "ITEM":
             nbt = parse_nbt(item.get('nbt'))
