@@ -49,6 +49,13 @@
       "page": [
         1
       ],
+      "display": {
+        "item": "minecraft:dirt",
+        "name": "Dirt",
+        "lore": [
+          "but from a command!"
+        ]
+      },
       "commands": [
         "give %player% dirt 1"
       ],
