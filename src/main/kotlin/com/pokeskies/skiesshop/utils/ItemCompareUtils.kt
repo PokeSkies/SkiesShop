@@ -44,7 +44,7 @@ object ItemCompareUtils {
         when (comparison.mode) {
             ComparisonMode.TYPE -> return true
             ComparisonMode.CONTAINS -> {
-                val aComponents = a.components
+                val aComponents = a.componentsPatch.split().added()
                 val bComponents = b.components
 
                 for (component in aComponents) {
