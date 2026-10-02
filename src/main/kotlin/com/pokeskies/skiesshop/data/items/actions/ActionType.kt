@@ -13,6 +13,7 @@ import com.pokeskies.skiesshop.data.items.actions.types.internal.NextPage
 import com.pokeskies.skiesshop.data.items.actions.types.internal.OpenShop
 import com.pokeskies.skiesshop.data.items.actions.types.internal.PlaySound
 import com.pokeskies.skiesshop.data.items.actions.types.internal.PreviousPage
+import com.pokeskies.skiesshop.data.items.actions.types.internal.Refresh
 
 enum class ActionType(val identifier: String, val clazz: Class<out Action>) {
     COMMAND_CONSOLE("command_console", CommandConsole::class.java),
@@ -27,6 +28,7 @@ enum class ActionType(val identifier: String, val clazz: Class<out Action>) {
     FIRST_PAGE("first_page", FirstPage::class.java),
     BACK("back", Back::class.java),
     PLAY_SOUND("play_sound", PlaySound::class.java),
+    REFRESH("refresh", Refresh::class.java),
 
     // Extensions
     MOLANG("molang", Molang::class.java);
