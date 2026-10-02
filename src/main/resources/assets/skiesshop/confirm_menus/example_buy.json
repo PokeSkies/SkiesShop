@@ -13,7 +13,8 @@
       "type": "BUY",
       "name": "<green>Buy 1",
       "lore": [
-        "<gray>Click to purchase"
+        "<gray>Click to purchase",
+        "<gray>Total: <white>%buy_total% %buy_price_currency%"
       ],
       "sound": {
         "id": "minecraft:entity.item.pickup",
@@ -29,7 +30,8 @@
       "type": "BUY",
       "name": "<green>Buy 8",
       "lore": [
-        "<gray>Click to purchase"
+        "<gray>Click to purchase",
+        "<gray>Total: <white>%buy_total% %buy_price_currency%"
       ],
       "sound": {
         "id": "minecraft:entity.item.pickup",
@@ -45,7 +47,8 @@
       "type": "BUY",
       "name": "<green>Buy 16",
       "lore": [
-        "<gray>Click to purchase"
+        "<gray>Click to purchase",
+        "<gray>Total: <white>%buy_total% %buy_price_currency%"
       ],
       "sound": {
         "id": "minecraft:entity.item.pickup",
@@ -61,7 +64,8 @@
       "type": "BUY",
       "name": "<green>Buy 32",
       "lore": [
-        "<gray>Click to purchase"
+        "<gray>Click to purchase",
+        "<gray>Total: <white>%buy_total% %buy_price_currency%"
       ],
       "sound": {
         "id": "minecraft:entity.item.pickup",
@@ -77,7 +81,8 @@
       "type": "BUY",
       "name": "<green>Buy 64",
       "lore": [
-        "<gray>Click to purchase"
+        "<gray>Click to purchase",
+        "<gray>Total: <white>%buy_total% %buy_price_currency%"
       ],
       "sound": {
         "id": "minecraft:entity.item.pickup",
@@ -93,7 +98,8 @@
       "type": "BUY",
       "name": "<green>Buy 128",
       "lore": [
-        "<gray>Click to purchase"
+        "<gray>Click to purchase",
+        "<gray>Total: <white>%buy_total% %buy_price_currency%"
       ],
       "sound": {
         "id": "minecraft:entity.item.pickup",

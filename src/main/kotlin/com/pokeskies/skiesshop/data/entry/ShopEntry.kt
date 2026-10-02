@@ -272,6 +272,24 @@ abstract class ShopEntry(
         }
     }
 
+    fun getPricePlaceholders(amount: Int? = null): Map<String, String> {
+        val buyPrice = buy?.price ?: 0.0
+        val sellPrice = sell?.price ?: 0.0
+        val placeholders = mutableMapOf(
+            "%buy_price%" to PriceOption.formatPricing(buyPrice),
+            "%sell_price%" to PriceOption.formatPricing(sellPrice),
+            "%buy_price_currency%" to (buy?.getCurrencyName() ?: ""),
+            "%sell_price_currency%" to (sell?.getCurrencyName() ?: ""),
+        )
+
+        if (amount != null) {
+            placeholders["%buy_total%"] = PriceOption.formatPricing(buyPrice * amount)
+            placeholders["%sell_total%"] = PriceOption.formatPricing(sellPrice * amount)
+        }
+
+        return placeholders
+    }
+
     fun toJson(): String {
         return SkiesShop.INSTANCE.gson.toJson(this)
     }

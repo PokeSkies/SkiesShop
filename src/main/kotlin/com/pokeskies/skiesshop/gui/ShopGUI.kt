@@ -1,12 +1,12 @@
 package com.pokeskies.skiesshop.gui
 
 import com.pokeskies.skiesshop.config.ConfigManager
-import com.pokeskies.skiesshop.config.PriceOption
 import com.pokeskies.skiesshop.data.ShopInstance
 import com.pokeskies.skiesshop.data.entry.ShopEntry
 import com.pokeskies.skiesshop.placeholders.PlaceholderManager
 import com.pokeskies.skiesshop.utils.MolangManager
 import com.pokeskies.skiesshop.utils.asNative
+import com.pokeskies.skiesshop.utils.replacePlaceholders
 import com.pokeskies.skiesshop.utils.clear
 import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.network.chat.Component
@@ -137,11 +137,7 @@ class ShopGUI(
                 } else {
                     lore.add(
                         Component.empty().withStyle { it.withItalic(false) }.append(
-                            line.replace("%buy_price%", PriceOption.formatPricing(entry.buy?.price ?: 0.0))
-                                .replace("%sell_price%", PriceOption.formatPricing(entry.sell?.price ?: 0.0))
-                                .replace("%buy_price_currency%", entry.buy?.getCurrencyName() ?: "")
-                                .replace("%sell_price_currency%", entry.sell?.getCurrencyName() ?: "")
-                                .asNative()
+                            line.replacePlaceholders(entry.getPricePlaceholders()).asNative()
                         )
                     )
                 }

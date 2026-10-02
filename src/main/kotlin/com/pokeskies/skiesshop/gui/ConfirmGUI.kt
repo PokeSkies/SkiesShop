@@ -49,7 +49,7 @@ class ConfirmGUI(
             val maxAmount = entry.getMaxAmount(amountItem.type)
             if (maxAmount != null && maxAmount < amountItem.amount) continue
 
-            val button = amountItem.asGuiItem().createButton(player)
+            val button = amountItem.asGuiItem().createButton(player, entry.getPricePlaceholders(amountItem.amount))
                 .setCallback { _ ->
                     processClick(amountItem)
                 }

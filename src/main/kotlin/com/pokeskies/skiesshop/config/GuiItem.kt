@@ -9,6 +9,7 @@ import com.pokeskies.skiesshop.placeholders.PlaceholderManager
 import com.pokeskies.skiesshop.utils.FlexibleListAdaptorFactory
 import com.pokeskies.skiesshop.utils.Utils
 import com.pokeskies.skiesshop.utils.asNative
+import com.pokeskies.skiesshop.utils.replacePlaceholders
 import eu.pb4.sgui.api.elements.GuiElementBuilder
 import net.minecraft.core.component.DataComponentPatch
 import net.minecraft.core.component.DataComponents
@@ -38,10 +39,14 @@ open class GuiItem(
     @SerializedName("custom_model_data")
     val customModelData: Int? = null
 ) {
-    fun getItemStack(player: ServerPlayer, amountOverride: Int = amount): ItemStack {
+    fun getItemStack(
+        player: ServerPlayer,
+        amountOverride: Int = amount,
+        placeholders: Map<String, String> = emptyMap()
+    ): ItemStack {
         if (item.isEmpty()) return ItemStack(Items.BARRIER, amountOverride)
 
-        val parsedItem = PlaceholderManager.parse(player, item)
+        val parsedItem = parse(player, item, placeholders)
 
         val optItem = BuiltInRegistries.ITEM.getOptional(ResourceLocation.parse(parsedItem))
         if (optItem.isEmpty) {
@@ -107,11 +112,11 @@ open class GuiItem(
         }
 
         if (name != null)
-            dataComponents.set(DataComponents.ITEM_NAME, PlaceholderManager.parse(player, name).asNative())
+            dataComponents.set(DataComponents.ITEM_NAME, parse(player, name, placeholders).asNative())
 
         if (lore.isNotEmpty()) {
             val parsedLore: MutableList<String> = mutableListOf()
-            for (line in lore.stream().map { PlaceholderManager.parse(player, it) }.toList()) {
+            for (line in lore.stream().map { parse(player, it, placeholders) }.toList()) {
                 if (line.contains("\n")) {
                     line.split("\n").forEach { parsedLore.add(it) }
                 } else {
@@ -131,8 +136,12 @@ open class GuiItem(
         return stack
     }
 
-    fun createButton(player: ServerPlayer): GuiElementBuilder {
-        return GuiElementBuilder(getItemStack(player))
+    fun createButton(player: ServerPlayer, placeholders: Map<String, String> = emptyMap()): GuiElementBuilder {
+        return GuiElementBuilder(getItemStack(player, placeholders = placeholders))
+    }
+
+    private fun parse(player: ServerPlayer, text: String, placeholders: Map<String, String>): String {
+        return PlaceholderManager.parse(player, text).replacePlaceholders(placeholders)
     }
 
     override fun toString(): String {

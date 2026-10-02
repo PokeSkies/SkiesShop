@@ -14,12 +14,17 @@ fun String.asNative(): Component {
     return SkiesShop.INSTANCE.adventure.toNative(SkiesShop.MINI_MESSAGE.deserialize(this))
 }
 
-fun String.asNative(placeholders: Map<String, String>): Component {
+fun String.replacePlaceholders(placeholders: Map<String, String>): String {
+    if (placeholders.isEmpty()) return this
     var text = this
     for ((key, value) in placeholders) {
         text = text.replace(key, value)
     }
-    return text.asNative()
+    return text
+}
+
+fun String.asNative(placeholders: Map<String, String>): Component {
+    return replacePlaceholders(placeholders).asNative()
 }
 
 fun net.kyori.adventure.text.Component.asNative(): Component {
@@ -31,11 +36,7 @@ fun String.asAdventure(): net.kyori.adventure.text.Component {
 }
 
 fun String.asAdventure(placeholders: Map<String, String>): net.kyori.adventure.text.Component {
-    var text = this
-    for ((key, value) in placeholders) {
-        text = text.replace(key, value)
-    }
-    return text.asAdventure()
+    return replacePlaceholders(placeholders).asAdventure()
 }
 
 fun net.kyori.adventure.text.Component.asPlain(): String {
